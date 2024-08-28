@@ -1,7 +1,7 @@
 package aledep.service;
 
 import aledep.dao.ProductoDAO;
-import aledep.dao.ProductoDTO;
+import aledep.dto.ProductoDTO;
 import aledep.model.Producto;
 
 import java.util.List;

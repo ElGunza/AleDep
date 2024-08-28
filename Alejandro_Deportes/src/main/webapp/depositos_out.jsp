@@ -223,7 +223,7 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 
             // Manejar el envío del formulario del modal (alta o edición)
             $('#formAltaDeposito').on('submit', function(event) {
-                event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+                event.preventDefault();
 
                 let url = selectedId ? 'editarDeposito' : 'altaDeposito'; // Determinar si es alta o edición
 
@@ -232,6 +232,7 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
                     type: 'POST',
                     data: $(this).serialize(), // Serializar todos los datos del formulario
                     success: function(response) {
+                    	
                         if (response.status === 'success') {
                             Swal.fire({
                                 icon: 'success',

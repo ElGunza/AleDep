@@ -1,4 +1,4 @@
-package aledep.controller;
+package aledep.controller.producto;
 
 import com.google.gson.Gson;
 import aledep.model.*;

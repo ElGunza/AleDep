@@ -1,8 +1,8 @@
-package aledep.controller;
+package aledep.controller.producto;
 
 import com.google.gson.Gson;
 
-import aledep.dao.ProductoDTO;
+import aledep.dto.ProductoDTO;
 import aledep.model.*;
 import aledep.service.*;
 

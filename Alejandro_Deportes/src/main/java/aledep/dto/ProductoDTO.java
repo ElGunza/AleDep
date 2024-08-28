@@ -1,4 +1,4 @@
-package aledep.dao;
+package aledep.dto;
 
 public class ProductoDTO {
     private Integer idProducto;

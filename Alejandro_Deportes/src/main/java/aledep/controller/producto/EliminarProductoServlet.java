@@ -1,4 +1,4 @@
-package aledep.controller;
+package aledep.controller.producto;
 
 import aledep.service.ProductoService;
 
