@@ -1,32 +1,48 @@
 <?xml version='1.0' encoding='utf-8'?>
-<!--
-  ~ Hibernate, Relational Persistence for Idiomatic Java
-  ~
-  ~ License: GNU Lesser General Public License (LGPL), version 2.1 or later.
-  ~ See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
-  -->
+<!-- ~ Hibernate, Relational Persistence for Idiomatic Java ~ ~ License: 
+	GNU Lesser General Public License (LGPL), version 2.1 or later. ~ See the 
+	lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>. -->
 <!DOCTYPE hibernate-configuration PUBLIC
         "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
-    <session-factory>
-        <property name="connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
-        <property name="connection.url">jdbc:sqlserver://127.0.0.1:1433;databaseName=FinalAvanzada2023</property>
-        <property name="connection.username">sa</property>
-        <property name="connection.password">12345678</property>
+	<session-factory>
+		<property name="connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+		<!-- <property name="connection.url">jdbc:sqlserver://GONZALO\\SQLEXPRESS;databaseName=AlejandroDeportes</property> -->
 
-        <!-- JDBC connection pool (use the built-in) -->
-        <property name="connection.pool_size">1</property>
-        <property name="dialect">org.hibernate.dialect.SQLServerDialect</property>
-        <!-- Echo all executed SQL to stdout -->
-        <property name="show_sql">true</property>
-        <!-- Drop and re-create the database schema on startup -->
-        <property name="hbm2ddl.auto">update</property>
+<!-- PRUEBA 1 -->
+		<property name="connection.url">jdbc:sqlserver://GONZALO\SQLEXPRESS;databaseName=AlejandroDeportes</property>
 
-        <!-- Names the annotated entity class -->
-        <mapping class="edu.usal.dao.dominio.Alquiler"/>
+<!-- PRUEBA 2 -->
+<!-- <property name="connection.url">jdbc:sqlserver://127.0.0.1:1433;databaseName=AlejandroDeportes</property>
+ -->
 
-        
+		<property name="connection.username">sa</property>
+		<property name="connection.password">12345678</property>
 
-    </session-factory>
+		<!-- JDBC connection pool (use the built-in) -->
+		<property name="connection.pool_size">3</property>
+		<property name="dialect">org.hibernate.dialect.SQLServerDialect</property>
+		<!-- Echo all executed SQL to stdout -->
+		<property name="show_sql">true</property>
+		<!-- Drop and re-create the database schema on startup -->
+		<property name="hbm2ddl.auto">update</property>
+
+		<!-- Names the annotated entity class -->
+		<mapping class="aledep.model.Producto"/>
+        <mapping class="aledep.model.Categoria"/>
+        <mapping class="aledep.model.Subcategoria"/>
+        <mapping class="aledep.model.Proveedor"/>
+        <mapping class="aledep.model.Deposito"/>
+        <mapping class="aledep.model.Marca"/>
+        <mapping class="aledep.model.Usuario"/>
+        <mapping class="aledep.model.Rol"/>
+        <mapping class="aledep.model.Venta"/>
+        <mapping class="aledep.model.Cliente"/>
+        <mapping class="aledep.model.MetodoPago"/>
+        <mapping class="aledep.model.Compra"/>
+
+
+
+	</session-factory>
 </hibernate-configuration>

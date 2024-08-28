@@ -7,7 +7,7 @@
 
 			<!-- Sidebar -->
 			<ul
-			class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
+			class="navbar-nav bg-gradient-danger sidebar sidebar-dark accordion"
 			id="accordionSidebar">
 
 			<!-- Sidebar - Brand -->
@@ -25,7 +25,7 @@
 		<hr class="sidebar-divider my-0">
 
 		<!-- Nav Item - Dashboard -->
-		<li class="nav-item active"><a class="nav-link" href="index.jsp">
+		<li class="nav-item active"><a class="nav-link" href="inventario.jsp">
 			<i class="fas fa-solid fa-bars"></i> <span>Menú</span>
 		</a></li>
 

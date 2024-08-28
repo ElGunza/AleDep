@@ -1,11 +1,14 @@
 package aledep.model;
 
 import javax.persistence.*;
+
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Table(name = "CLIENTES")
-public class Cliente {
+public class Cliente implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
