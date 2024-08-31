@@ -1,6 +1,6 @@
-package aledep.controller.deposito;
+package aledep.controller.marca;
 
-import aledep.service.DepositoService;
+import aledep.service.MarcaService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,39 +10,38 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.google.gson.Gson;
 
-@WebServlet("/eliminarDeposito")
-public class EliminarDepositoServlet extends HttpServlet {
+@WebServlet("/eliminarMarca")
+public class EliminarMarcaServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private final DepositoService depositoService = new DepositoService();
+    private final MarcaService marcaService = new MarcaService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            int depositoId = Integer.parseInt(request.getParameter("id"));
+            int marcaId = Integer.parseInt(request.getParameter("id"));
 
-            // Llama al método de servicio para desactivar el depósito
-            depositoService.desactivarDeposito(depositoId);
+            // Llama al método de servicio para desactivar la marca
+            marcaService.desactivarMarca(marcaId);
 
             // Responder con un JSON indicando éxito
             Map<String, String> responseData = new HashMap<>();
             responseData.put("status", "success");
-            responseData.put("message", "Depósito eliminado con éxito");
+            responseData.put("message", "Marca eliminada con éxito");
 
             response.setContentType("application/json");
             response.getWriter().write(new Gson().toJson(responseData));
 
         } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de depósito inválido");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de marca inválido");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al eliminar el depósito");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al eliminar la marca");
         }
     }
 }

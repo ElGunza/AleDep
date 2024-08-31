@@ -1,39 +1,14 @@
-package aledep.model;
+package aledep.dto;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
-
-@Entity
-@Table(name = "PROVEEDOR")
-public class Proveedor implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_Proveedor")
+public class ProveedorDTO {
     private Integer idProveedor;
-
-    @Column(name = "Nombre")
     private String nombre;
-
-    @Column(name = "CUIT_DNI")
     private String cuitDni;
-
-    @Column(name = "TipoCUIT_DNI")
     private String tipoCuitDni;
-
-    @Column(name = "Contacto")
     private String contacto;
-
-    @Column(name = "Activo")
     private Boolean activo;
 
-    @OneToMany(mappedBy = "proveedor")
-    private List<Producto> productos;
-
     // Getters y Setters
-
     public Integer getIdProveedor() {
         return idProveedor;
     }
@@ -80,13 +55,5 @@ public class Proveedor implements Serializable {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
-    }
-
-    public List<Producto> getProductos() {
-        return productos;
-    }
-
-    public void setProductos(List<Producto> productos) {
-        this.productos = productos;
     }
 }

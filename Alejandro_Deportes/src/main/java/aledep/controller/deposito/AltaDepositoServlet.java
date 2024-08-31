@@ -16,48 +16,50 @@ import java.util.Map;
 @WebServlet("/altaDeposito")
 public class AltaDepositoServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final DepositoService depositoService = new DepositoService();
+    private final DepositoService depositoService = new DepositoService();
 
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            Deposito deposito = obtenerDepositoDesdeRequest(request);
 
-		Deposito deposito = obtenerDepositoDesdeRequest(request);
+            depositoService.saveDeposito(deposito);
 
-		depositoService.saveDeposito(deposito);
+            // Responder con un JSON indicando éxito
+            Map<String, String> responseData = new HashMap<>();
+            responseData.put("status", "success");
+            responseData.put("message", "Depósito guardado con éxito");
 
-		// Responder con un JSON indicando éxito
-		Map<String, String> responseData = new HashMap<>();
-		responseData.put("status", "success");
-		responseData.put("message", "Depósito guardado con éxito");
+            response.setContentType("application/json");
+            response.getWriter().write(new Gson().toJson(responseData));
+        } catch (Exception e) {
+            manejarExcepcion(response, e, "Error al guardar el depósito.");
+        }
+    }
 
-		/*
-		 * Al usar "application/json", le estás indicando al cliente (por ejemplo, un
-		 * navegador web o una aplicación que realiza una solicitud HTTP) que la
-		 * respuesta del servidor es de tipo JSON (JavaScript Object Notation).
-		 */
+    private Deposito obtenerDepositoDesdeRequest(HttpServletRequest request) {
+        Deposito deposito = new Deposito();
+        deposito.setNombre(request.getParameter("nombre"));
+        deposito.setDescripcion(request.getParameter("descripcion"));
+        deposito.setUbicacion(parseInt(request.getParameter("ubicacion"),0));
+        deposito.setCapacidad(parseInt(request.getParameter("capacidad"), 0));
+        deposito.setActivo(Boolean.parseBoolean(request.getParameter("activo")));
+        return deposito;
+    }
 
-		response.setContentType("application/json");
-		response.getWriter().write(new Gson().toJson(responseData));
-	}
+    private void manejarExcepcion(HttpServletResponse response, Exception e, String mensaje) throws IOException {
+        e.printStackTrace();
+        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, mensaje);
+    }
 
-	private Deposito obtenerDepositoDesdeRequest(HttpServletRequest request) {
-		Deposito deposito = new Deposito();
-		deposito.setNombre(request.getParameter("nombre"));
-		deposito.setDescripcion(request.getParameter("descripcion"));
-		deposito.setUbicacion(parseInt(request.getParameter("ubicacion"), 0));
-		deposito.setCapacidad(parseInt(request.getParameter("capacidad"), 0));
-		deposito.setActivo(Boolean.parseBoolean(request.getParameter("activo")));
-		return deposito;
-	}
-
-	private int parseInt(String value, int defaultValue) {
-		try {
-			return Integer.parseInt(value);
-		} catch (NumberFormatException e) {
-			return defaultValue;
-		}
-	}
+    private int parseInt(String value, int defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
 }

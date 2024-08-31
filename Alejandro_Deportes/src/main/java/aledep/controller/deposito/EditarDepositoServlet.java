@@ -25,14 +25,23 @@ public class EditarDepositoServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        int depositoId = Integer.parseInt(request.getParameter("id"));
-        Deposito deposito = depositoService.getDepositoById(depositoId);
-        if (deposito != null) {
-            DepositoDTO depositoDTO = new DepositoDTO(deposito);
-            response.setContentType("application/json");
-            response.getWriter().write(new Gson().toJson(depositoDTO));
-        } else {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Depósito no encontrado");
+        try {
+            int depositoId = parseInt(request.getParameter("id"), -1);
+            if (depositoId > 0) {
+                Deposito deposito = depositoService.getDepositoById(depositoId);
+                if (deposito != null) {
+                    DepositoDTO depositoDTO = new DepositoDTO(deposito);
+                    response.setContentType("application/json");
+                    response.getWriter().write(new Gson().toJson(depositoDTO));
+                } else {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Depósito no encontrado");
+                }
+            } else {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de depósito inválido");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al obtener el depósito");
         }
     }
 
@@ -40,30 +49,33 @@ public class EditarDepositoServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        Deposito deposito = obtenerDepositoDesdeRequest(request);
+        try {
+            Deposito deposito = obtenerDepositoDesdeRequest(request);
+            depositoService.updateDeposito(deposito);
 
-        depositoService.updateDeposito(deposito);
+            // Responder con un JSON indicando éxito
+            Map<String, String> responseData = new HashMap<>();
+            responseData.put("status", "success");
+            responseData.put("message", "Depósito actualizado con éxito");
 
-        // Responder con un JSON indicando éxito
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put("status", "success");
-        responseData.put("message", "Depósito actualizado con éxito");
-
-        response.setContentType("application/json");
-        response.getWriter().write(new Gson().toJson(responseData));
+            response.setContentType("application/json");
+            response.getWriter().write(new Gson().toJson(responseData));
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al actualizar el depósito");
+        }
     }
 
     private Deposito obtenerDepositoDesdeRequest(HttpServletRequest request) {
-        int idDeposito = Integer.parseInt(request.getParameter("DepositoId"));
-        Deposito deposito = depositoService.getDepositoById(idDeposito);
-        if (deposito == null) {
-            deposito = new Deposito();
-        }
+        int idDeposito = parseInt(request.getParameter("DepositoId"), -1);
+        Deposito deposito = idDeposito > 0 ? depositoService.getDepositoById(idDeposito) : new Deposito();
+
         deposito.setNombre(request.getParameter("nombre"));
         deposito.setDescripcion(request.getParameter("descripcion"));
         deposito.setUbicacion(parseInt(request.getParameter("ubicacion"), 0));
         deposito.setCapacidad(parseInt(request.getParameter("capacidad"), 0));
         deposito.setActivo(Boolean.parseBoolean(request.getParameter("activo")));
+
         return deposito;
     }
 

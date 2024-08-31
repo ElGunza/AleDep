@@ -17,28 +17,53 @@ import java.util.List;
 @WebServlet("/productos")
 public class ProductoServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
-	private ProductoService productoService = new ProductoService();
+    private static final long serialVersionUID = 1L;
+    private final ProductoService productoService = new ProductoService();
 
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		String filtro = request.getParameter("filtro");
+        try {
+            String filtro = request.getParameter("filtro");
+            List<Producto> productos;
 
-		List<Producto> productos;
+            if ("todos".equalsIgnoreCase(filtro)) {
+                productos = productoService.getAllProductos();
+            } else {
+                productos = productoService.getProductosActivos();
+            }
 
-		if ("todos".equalsIgnoreCase(filtro)) {
-			productos = productoService.getAllProductos();
-		} else {
-			productos = productoService.getProductosActivos();
-		}
+            guardarProductosEnSesion(request.getSession(), productos);
 
-		// Guardar la lista de productos en la sesión
-		HttpSession productsSession = request.getSession();
-		productsSession.setAttribute("listaProductos", productos);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("productos_out.jsp");
+            dispatcher.forward(request, response);
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("productos_out.jsp"); 
-		dispatcher.forward(request, response);
-	}
+        } catch (Exception e) {
+            manejarExcepcion(response, e, "Error al obtener la lista de productos.");
+        }
+    }
+
+    /**
+     * Guarda la lista de productos en la sesión.
+     *
+     * @param session   La sesión HTTP donde se guardará la lista.
+     * @param productos La lista de productos a guardar.
+     */
+    private void guardarProductosEnSesion(HttpSession session, List<Producto> productos) {
+        session.setAttribute("listaProductos", productos);
+    }
+
+    /**
+     * Maneja las excepciones y responde con un mensaje de error.
+     *
+     * @param response El objeto HttpServletResponse.
+     * @param e        La excepción capturada.
+     * @param mensaje  El mensaje de error a enviar al cliente.
+     * @throws IOException Si ocurre un error al escribir la respuesta.
+     */
+    private void manejarExcepcion(HttpServletResponse response, Exception e, String mensaje) throws IOException {
+        e.printStackTrace();
+        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, mensaje);
+    }
 }

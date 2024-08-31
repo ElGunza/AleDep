@@ -19,6 +19,9 @@
 			<form action="depositos" method="get">
 				<a class="collapse-item" href="depositos">Depositos</a>
 			</form>
+			<form action="marcas" method="get">
+				<a class="collapse-item" href="marcas">Marcas</a>
+			</form>
 			<form action="categorias" method="get">
 				<a class="collapse-item" href="categorias">Categorías</a>
 			</form>

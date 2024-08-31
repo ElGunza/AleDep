@@ -38,7 +38,7 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 <%@ include file="components/topbar.jsp"%>
 
 <div class="container-fluid">
-	<!-- 	<h1 class="h3 mb-2 text-gray-800">Inventario</h1> -->
+	<!-- <h1 class="h3 mb-2 text-gray-800">Inventario</h1> -->
 	<div class="card shadow mb-4">
 		<div
 			class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -299,253 +299,245 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 	</div>
 
 	<script>
-	    document.addEventListener("DOMContentLoaded", function() {
-	        // Verificar si DataTable ya está inicializado
-	        if (!$.fn.DataTable.isDataTable("#dataTable")) {
-	            $('#dataTable').DataTable({
-	                "pageLength": 10,
-	                "lengthChange": false,
-	                "language": {
-	                    "search": "Buscar:",
-	                    "paginate": {
-	                        "next": "Siguiente",
-	                        "previous": "Anterior"
-	                    },
-	                    "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-	                    "infoEmpty": "No hay registros disponibles",
-	                    "emptyTable": "No hay productos disponibles"
-	                }
-	            });
-	        }
+        document.addEventListener("DOMContentLoaded", function() {
+            // Verificar si DataTable ya está inicializado
+            if (!$.fn.DataTable.isDataTable("#dataTable")) {
+                $('#dataTable').DataTable({
+                    "pageLength": 10,
+                    "lengthChange": false,
+                    "language": {
+                        "search": "Buscar:",
+                        "paginate": {
+                            "next": "Siguiente",
+                            "previous": "Anterior"
+                        },
+                        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                        "infoEmpty": "No hay registros disponibles",
+                        "emptyTable": "No hay productos disponibles"
+                    }
+                });
+            }
 
-	        let selectedId = null;
+            let selectedId = null;
 
-	        $(document).ready(function() {
-	            let table = $('#dataTable').DataTable();
+            $(document).ready(function() {
+                let table = $('#dataTable').DataTable();
 
-	            // Asocia el evento al tbody para seleccionar una fila
-	            $('#dataTable tbody').on('click', 'tr', function() {
-	                $('#dataTable tbody tr').removeClass('selected');
-	                $(this).addClass('selected');
-	                selectedId = $(this).data('id');
-	            });
+                // Asocia el evento al tbody para seleccionar una fila
+                $('#dataTable tbody').on('click', 'tr', function() {
+                    $('#dataTable tbody tr').removeClass('selected');
+                    $(this).addClass('selected');
+                    selectedId = $(this).data('id');
+                });
 
-	            // Desmarcar selección al cambiar la página
-	            table.on('draw', function() {
-	                $('#dataTable tbody tr').removeClass('selected');
-	                selectedId = null;
-	            });
+                // Desmarcar selección al cambiar la página
+                table.on('draw', function() {
+                    $('#dataTable tbody tr').removeClass('selected');
+                    selectedId = null;
+                });
 
-	            // Botón para abrir el modal de Alta de Producto
-	            $('#btnAltaProducto').on('click', function() {
-	                // Limpiar el formulario
-	                limpiarFormularioProducto();
+                // Botón para abrir el modal de Alta de Producto
+                $('#btnAltaProducto').on('click', function() {
+                    // Limpiar el formulario
+                    limpiarFormularioProducto();
 
-	                // Cambiar el título del modal
-	                $('#altaProductoModalLabel').text('Nuevo Producto');
+                    // Cambiar el título del modal
+                    $('#altaProductoModalLabel').text('Nuevo Producto');
 
-	                // Mostrar el modal
-	                $('#altaProductoModal').modal('show');
-	            });
+                    // Mostrar el modal
+                    $('#altaProductoModal').modal('show');
+                });
 
-	            // Manejar el envío del formulario del modal (alta o edición)
-	            $('#formAltaProducto').on('submit', function(event) {
-	                event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+                // Manejar el envío del formulario del modal (alta o edición)
+                $('#formAltaProducto').on('submit', function(event) {
+                    event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
 
-	                let url = selectedId ? 'editarProducto' : 'altaProducto'; // Determinar si es alta o edición
+                    let url = selectedId ? 'editarProducto' : 'altaProducto'; // Determinar si es alta o edición
 
-	                $.ajax({
-	                    url: url,
-	                    type: 'POST',
-	                    data: $(this).serialize(), // Serializar todos los datos del formulario
-	                    success: function(response) {
-	                        if (response.status === 'success') {
-	                            Swal.fire({
-	                                icon: 'success',
-	                                title: 'Éxito',
-	                                text: response.message
-	                            }).then(() => {
-	                                // Cerrar el modal
-	                                $('#altaProductoModal').modal('hide');
-	                                // Recargar la tabla de productos
-	                                location.reload();
-	                            });
-	                        } else {
-	                            Swal.fire({
-	                                icon: 'error',
-	                                title: 'Error',
-	                                text: 'Hubo un problema al guardar el producto.'
-	                            });
-	                        }
-	                    },
-	                    error: function() {
-	                        Swal.fire({
-	                            icon: 'error',
-	                            title: 'Error',
-	                            text: 'Hubo un problema al procesar la solicitud.'
-	                        });
-	                    }
-	                });
-	            });
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: $(this).serialize(), // Serializar todos los datos del formulario
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Éxito',
+                                    text: response.message
+                                }).then(() => {
+                                    // Cerrar el modal
+                                    $('#altaProductoModal').modal('hide');
+                                    // Recargar la tabla de productos
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Hubo un problema al guardar el producto.'
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Hubo un problema al procesar la solicitud.'
+                            });
+                        }
+                    });
+                });
 
-	            // Botón para abrir el modal de Edición de Producto
-	            $('#btnEditarProducto').on('click', function() {
-	                if (selectedId) {
-	                    $.ajax({
-	                        url: 'editarProducto',
-	                        type: 'GET',
-	                        data: { id: selectedId },
-	                        success: function(data) {
-	                            llenarFormularioProducto(data);
+                // Botón para abrir el modal de Edición de Producto
+                $('#btnEditarProducto').on('click', function() {
+                    if (selectedId) {
+                        $.ajax({
+                            url: 'editarProducto',
+                            type: 'GET',
+                            data: { id: selectedId },
+                            success: function(data) {
+                                llenarFormularioProducto(data);
 
-	                            // Cambiar el título del modal
-	                            $('#altaProductoModalLabel').text('Editar Producto');
-	                            $('#altaProductoModal').modal('show');
-	                        },
-	                        error: function() {
-	                            Swal.fire({
-	                                icon: 'error',
-	                                title: 'Error',
-	                                text: 'No se pudo cargar la información del producto.'
-	                            });
-	                        }
-	                    });
-	                } else {
-	                    Swal.fire({
-	                        icon: 'warning',
-	                        title: 'Advertencia',
-	                        text: 'Por favor, selecciona un producto primero.'
-	                    });
-	                }
-	            });
+                                // Cambiar el título del modal
+                                $('#altaProductoModalLabel').text('Editar Producto');
+                                $('#altaProductoModal').modal('show');
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'No se pudo cargar la información del producto.'
+                                });
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Advertencia',
+                            text: 'Por favor, selecciona un producto primero.'
+                        });
+                    }
+                });
 
-	            $('#dataTable tbody').on('dblclick', 'tr', function() {
-	                $('#btnEditarProducto').trigger('click');
-	            });
-	            
-	            
-	         // Botón para eliminar producto
-	            $('#btnEliminarProducto').on('click', function() {
-	                if (selectedId) {
-	                    Swal.fire({
-	                        title: '¿Estás seguro?',
-	                        text: "No podrás revertir esto",
-	                        icon: 'warning',
-	                        showCancelButton: true,
-	                        confirmButtonColor: '#3085d6',
-	                        cancelButtonColor: '#d33',
-	                        confirmButtonText: 'Sí, eliminar'
-	                    }).then((result) => {
-	                        if (result.isConfirmed) {
-	                            $.ajax({
-	                                url: 'eliminarProducto',
-	                                type: 'POST',
-	                                data: { id: selectedId },
-	                                success: function(response) {
-	                                    if (response.status === 'success') {
-	                                        Swal.fire({
-	                                            icon: 'success',
-	                                            title: 'Eliminado',
-	                                            text: response.message
-	                                        }).then(() => {
-	                                            // Recargar la tabla de productos
-	                                            location.reload();
-	                                        });
-	                                    } else {
-	                                        Swal.fire({
-	                                            icon: 'error',
-	                                            title: 'Error',
-	                                            text: response.message
-	                                        });
-	                                    }
-	                                },
-	                                error: function() {
-	                                    Swal.fire({
-	                                        icon: 'error',
-	                                        title: 'Error',
-	                                        text: 'Hubo un problema al procesar la solicitud.'
-	                                    });
-	                                }
-	                            });
-	                        }
-	                    });
-	                } else {
-	                    Swal.fire({
-	                        icon: 'warning',
-	                        title: 'Advertencia',
-	                        text: 'Por favor, selecciona un producto primero.'
-	                    });
-	                }
-	            });
-	            
-	            /* FUNCIONES */
-	                    
-	            // Función para limpiar el formulario de producto
-	            function limpiarFormularioProducto() {
-	                $('#productoId').val('');
-	                $('#codigo').val('');
-	                $('#nombre').val('');
-	                $('#idCategoria').val('');
-	                $('#idMarca').val('');
-	                $('#talle').val('');
-	                $('#cantidad').val('');
-	                $('#precioVenta').val('');
-	                $('#precioCompra').val('');
-	                $('#colores').val('');
-	                $('#imageProduct').val('');
-	                $('#codigoBarras').val('');
-	                $('#enlaceProducto').val('');
-	                $('#idProveedor').val('');
-	                $('#idDeposito').val('');
-	                $('#activo').val('true');
-	            }
+                $('#dataTable tbody').on('dblclick', 'tr', function() {
+                    $('#btnEditarProducto').trigger('click');
+                });
+                
+                
+                // Botón para eliminar producto
+                $('#btnEliminarProducto').on('click', function() {
+                    if (selectedId) {
+                        Swal.fire({
+                            title: '¿Estás seguro?',
+                            text: "No podrás revertir esto",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Sí, eliminar'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: 'eliminarProducto',
+                                    type: 'POST',
+                                    data: { id: selectedId },
+                                    success: function(response) {
+                                        if (response.status === 'success') {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Eliminado',
+                                                text: response.message
+                                            }).then(() => {
+                                                // Recargar la tabla de productos
+                                                location.reload();
+                                            });
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error',
+                                                text: response.message
+                                            });
+                                        }
+                                    },
+                                    error: function() {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: 'Hubo un problema al procesar la solicitud.'
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Advertencia',
+                            text: 'Por favor, selecciona un producto primero.'
+                        });
+                    }
+                });
+                
+                /* FUNCIONES */
+                        
+                // Función para limpiar el formulario de producto
+                function limpiarFormularioProducto() {
+                    $('#productoId').val('');
+                    $('#codigo').val('');
+                    $('#nombre').val('');
+                    $('#idCategoria').val('');
+                    $('#idMarca').val('');
+                    $('#talle').val('');
+                    $('#cantidad').val('');
+                    $('#precioVenta').val('');
+                    $('#precioCompra').val('');
+                    $('#colores').val('');
+                    $('#imageProduct').val('');
+                    $('#codigoBarras').val('');
+                    $('#enlaceProducto').val('');
+                    $('#idProveedor').val('');
+                    $('#idDeposito').val('');
+                    $('#activo').val('true');
+                }
 
-	            // Función para llenar el formulario de producto con datos para editar
-	            function llenarFormularioProducto(data) {
-	            	
-	                $('#productoId').val(data.idProducto);
-	                $('#codigo').val(data.codigo);
-	                $('#nombre').val(data.nombre);
+             // Función para llenar el formulario de producto con datos para editar
+                function llenarFormularioProducto(data) {
 
-	                $('#talle').val(data.talle);
-	                $('#cantidad').val(data.cantidad);
-	                $('#precioVenta').val(data.precioVenta);
-	                $('#precioCompra').val(data.precioCompra);
-	                $('#colores').val(data.colores);
-	                $('#imageProduct').val(data.imageProduct);
-	                $('#codigoBarras').val(data.codigoBarras);
-	                $('#enlaceProducto').val(data.enlaceProducto);
-	                //$('#idProveedor').val(data.idProveedor);
-	                //$('#idDeposito').val(data.idDeposito);
-	                //$('#idCategoria').val(data.idCategoria);
-	                //$('#idMarca').val(data.idMarca);
-	                
-	                $('#activo').val(data.activo.toString());
-	                
-	                $('#idCategoria option').filter(function() {
-	                    return $(this).text() == data.categoria;
-	                }).prop('selected', true);
+                    const producto = data.data;
+                    
+                    $('#productoId').val(producto.idProducto);
+                    $('#codigo').val(producto.codigo);
+                    $('#nombre').val(producto.nombre);
 
-	                $('#idMarca option').filter(function() {
-	                    return $(this).text() == data.marca;
-	                }).prop('selected', true);
+                    $('#talle').val(producto.talle || '');
+                    $('#cantidad').val(producto.cantidad || '');
+                    $('#precioVenta').val(producto.precioVenta || '');
+                    $('#precioCompra').val(producto.precioCompra || '');
+                    $('#colores').val(producto.colores || '');
+                    $('#imageProduct').val(producto.imageProduct || '');
+                    $('#codigoBarras').val(producto.codigoBarras || '');
+                    $('#enlaceProducto').val(producto.enlaceProducto || '');
 
-	                $('#idProveedor option').filter(function() {
-	                    return $(this).text() == data.proveedor;
-	                }).prop('selected', true);
+                    $('#activo').val(producto.activo ? 'true' : 'false');
+                    
+                    setSelectOption('#idCategoria', producto.categoria, producto.idCategoria);
+                    setSelectOption('#idMarca', producto.marca, producto.idMarca);
+                    setSelectOption('#idProveedor', producto.proveedor, producto.idProveedor);
+                    setSelectOption('#idDeposito', producto.deposito, producto.idDeposito);
+                }
 
-	                $('#idDeposito option').filter(function() {
-	                    return $(this).text() == data.deposito;
-	                }).prop('selected', true);
+                // Utility function to set select options
+                function setSelectOption(selector, text, value) {
+                    let select = $(selector);
+                    select.find('option').filter(function() {
+                        return $(this).val() == value || $(this).text() == text;
+                    }).prop('selected', true);
+                }
 
-	                
-	                
-	            }
-	        });
-	    });
-	</script>
+            });
+        });
+    </script>
 
 </div>
-
 
 <%@ include file="components/footer.jsp"%>

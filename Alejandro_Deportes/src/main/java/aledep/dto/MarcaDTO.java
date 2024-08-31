@@ -1,33 +1,12 @@
-package aledep.model;
+package aledep.dto;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
-
-@Entity
-@Table(name = "MARCAS")
-public class Marca implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_Marca")
+public class MarcaDTO {
     private Integer idMarca;
-
-    @Column(name = "Nombre")
     private String nombre;
-
-    @Column(name = "Descripcion")
     private String descripcion;
-
-    @Column(name = "Activo")
     private Boolean activo;
 
-    @OneToMany(mappedBy = "marca")
-    private List<Producto> productos;
-
     // Getters y Setters
-
     public Integer getIdMarca() {
         return idMarca;
     }
@@ -58,13 +37,5 @@ public class Marca implements Serializable {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
-    }
-
-    public List<Producto> getProductos() {
-        return productos;
-    }
-
-    public void setProductos(List<Producto> productos) {
-        this.productos = productos;
     }
 }

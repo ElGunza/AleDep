@@ -1,21 +1,26 @@
 package aledep.service;
 
-import aledep.dao.ProductoDAO;
+import aledep.dao.interfaces.ProductoDAO;
+import aledep.dao.impl.ProductoDAOImpl;
 import aledep.dto.ProductoDTO;
 import aledep.model.Producto;
 
 import java.util.List;
 
 public class ProductoService {
-	private ProductoDAO productoDAO = new ProductoDAO();
+	private final ProductoDAO productoDAO;
+
+	public ProductoService() {
+		this.productoDAO = new ProductoDAOImpl(); // Inyección de la implementación concreta
+	}
 
 	public void saveProducto(Producto producto) {
-		// AGREGAR VALIDACIONES
+		validarProducto(producto);
 		productoDAO.saveProducto(producto);
 	}
 
 	public void updateProducto(Producto producto) {
-		// AGREGAR VALIDACIONES
+		validarProducto(producto);
 		productoDAO.updateProducto(producto);
 	}
 
@@ -40,6 +45,19 @@ public class ProductoService {
 	}
 
 	public ProductoDTO convertirAProductoDTO(Producto producto) {
+		return convertirProductoAProductoDTO(producto);
+	}
+
+	private void validarProducto(Producto producto) {
+		if (producto.getCodigo() == null || producto.getCodigo().isEmpty()) {
+			throw new IllegalArgumentException("El código del producto no puede estar vacío.");
+		}
+		if (producto.getNombre() == null || producto.getNombre().isEmpty()) {
+			throw new IllegalArgumentException("El nombre del producto no puede estar vacío.");
+		}
+	}
+
+	private ProductoDTO convertirProductoAProductoDTO(Producto producto) {
 		ProductoDTO dto = new ProductoDTO();
 		dto.setIdProducto(producto.getIdProducto());
 		dto.setCodigo(producto.getCodigo());
@@ -48,14 +66,44 @@ public class ProductoService {
 		dto.setCantidad(producto.getCantidad());
 		dto.setPrecioVenta(producto.getPrecioVenta());
 		dto.setPrecioCompra(producto.getPrecioCompra());
-		dto.setCategoria(producto.getCategoria() != null ? producto.getCategoria().getNombre() : "Sin categoría");
-		dto.setMarca(producto.getMarca() != null ? producto.getMarca().getNombre() : "Sin marca");
-		dto.setProveedor(producto.getProveedor() != null ? producto.getProveedor().getNombre() : "Sin proveedor");
-		dto.setDeposito(producto.getDeposito() != null ? producto.getDeposito().getNombre() : "Sin depósito");
+
+		// Validación de Categoria
+		if (producto.getCategoria() != null) {
+			dto.setIdCategoria(producto.getCategoria().getIdCategoria());
+			dto.setCategoria(producto.getCategoria().getNombre());
+		} else {
+			dto.setIdCategoria(null);
+			dto.setCategoria("Sin categoría");
+		}
+
+		// Validación de Marca
+		if (producto.getMarca() != null) {
+			dto.setIdMarca(producto.getMarca().getIdMarca());
+			dto.setMarca(producto.getMarca().getNombre());
+		} else {
+			dto.setIdMarca(null);
+			dto.setMarca("Sin marca");
+		}
+
+		// Validación de Proveedor
+		if (producto.getProveedor() != null) {
+			dto.setIdProveedor(producto.getProveedor().getIdProveedor());
+			dto.setProveedor(producto.getProveedor().getNombre());
+		} else {
+			dto.setIdProveedor(null);
+			dto.setProveedor("Sin proveedor");
+		}
+
+		// Validación de Deposito
+		if (producto.getDeposito() != null) {
+			dto.setIdDeposito(producto.getDeposito().getIdDeposito());
+			dto.setDeposito(producto.getDeposito().getNombre());
+		} else {
+			dto.setIdDeposito(null);
+			dto.setDeposito("Sin depósito");
+		}
+
 		dto.setActivo(producto.getActivo());
-		
-		
-		
 		return dto;
 	}
 
