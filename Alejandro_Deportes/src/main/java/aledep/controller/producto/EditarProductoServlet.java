@@ -74,7 +74,7 @@ public class EditarProductoServlet extends HttpServlet {
 		producto.setCantidad(parseInt(request.getParameter("cantidad"), 0));
 		producto.setPrecioVenta(parseDouble(request.getParameter("precioVenta"), 0.0));
 		producto.setPrecioCompra(parseDouble(request.getParameter("precioCompra"), 0.0));
-		producto.setActivo(true);
+		producto.setActivo(Boolean.parseBoolean(request.getParameter("activo")));
 
 		// Configurar las entidades relacionadas
 		producto.setCategoria(categoriaService.getCategoriaById(parseInt(request.getParameter("idCategoria"), 0)));

@@ -23,18 +23,6 @@ public class DepositoDAO {
         }
     }
 
-    public List<Deposito> getAllDepositos() {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from Deposito", Deposito.class).list();
-        }
-    }
-
-    public Deposito getDepositoById(Integer id) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Deposito.class, id);
-        }
-    }
-
     public void updateDeposito(Deposito deposito) {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -65,4 +53,42 @@ public class DepositoDAO {
             e.printStackTrace();
         }
     }
+    
+    public void desactivarDeposito(Integer id) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            Deposito deposito = session.get(Deposito.class, id);
+            if (deposito != null) {
+                deposito.setActivo(false); // Realiza la baja lógica marcando como inactivo
+                session.update(deposito);
+                transaction.commit();
+            }
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+    
+    public List<Deposito> getAllDepositos() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("from Deposito", Deposito.class).list();
+        }
+    }
+
+    public Deposito getDepositoById(Integer id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.get(Deposito.class, id);
+        }
+    }
+    
+    public List<Deposito> getDepositosActivos() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Deposito WHERE activo = true", Deposito.class).list();
+        }
+    }
+
+
 }

@@ -27,7 +27,7 @@ public class EliminarProductoServlet extends HttpServlet {
 		int productoId = Integer.parseInt(request.getParameter("id"));
 
 		// Llama al método de servicio para eliminar el producto
-		productoService.deleteProducto(productoId);
+		productoService.desactivarProducto(productoId);
 
 		Map<String, String> responseData = new HashMap<>();
 		responseData.put("status", "success");

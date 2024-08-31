@@ -27,7 +27,9 @@ public class EliminarDepositoServlet extends HttpServlet {
         int depositoId = Integer.parseInt(request.getParameter("id"));
 
         // Llama al método de servicio para eliminar el depósito
-        depositoService.deleteDeposito(depositoId);
+
+        depositoService.desactivarDeposito(depositoId);      
+//        depositoService.deleteDeposito(depositoId);
 
         Map<String, String> responseData = new HashMap<>();
         responseData.put("status", "success");

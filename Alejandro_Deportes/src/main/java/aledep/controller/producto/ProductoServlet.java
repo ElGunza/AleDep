@@ -15,11 +15,8 @@ import java.io.IOException;
 import java.util.List;
 
 @WebServlet("/productos")
-public class ProductServlet extends HttpServlet {
+public class ProductoServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private ProductoService productoService = new ProductoService();
 
@@ -27,16 +24,21 @@ public class ProductServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		// Obtener lista de productos desde la base de datos
-		List<Producto> productos = productoService.getAllProductos();
+		String filtro = request.getParameter("filtro");
 
+		List<Producto> productos;
+
+		if ("todos".equalsIgnoreCase(filtro)) {
+			productos = productoService.getAllProductos();
+		} else {
+			productos = productoService.getProductosActivos();
+		}
+
+		// Guardar la lista de productos en la sesión
 		HttpSession productsSession = request.getSession();
 		productsSession.setAttribute("listaProductos", productos);
 
-
-		RequestDispatcher dispatcher = request.getRequestDispatcher("productos_out.jsp"); // Ajusta la ruta
+		RequestDispatcher dispatcher = request.getRequestDispatcher("productos_out.jsp"); 
 		dispatcher.forward(request, response);
-
 	}
-
 }

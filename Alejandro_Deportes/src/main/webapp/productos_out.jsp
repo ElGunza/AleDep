@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <style>
@@ -39,13 +38,22 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 <%@ include file="components/topbar.jsp"%>
 
 <div class="container-fluid">
-<!-- 	<h1 class="h3 mb-2 text-gray-800">Inventario</h1> -->
+	<!-- 	<h1 class="h3 mb-2 text-gray-800">Inventario</h1> -->
 	<div class="card shadow mb-4">
 		<div
 			class="card-header py-3 d-flex justify-content-between align-items-center">
 			<h6 class="m-0 font-weight-bold text-primary">Productos de
 				Alejandro Deportes</h6>
-			<div>
+
+		</div>
+		<div class="card-body">
+
+			<div class="filter-options mb-3" style="float: left">
+				<a href="productos?filtro=activos" class="btn btn-primary">Mostrar
+					Activos</a> <a href="productos?filtro=todos" class="btn btn-secondary">Mostrar
+					Todos</a>
+			</div>
+			<div style="float: right">
 				<!-- Botón para abrir el modal de alta de producto -->
 				<a href="#" class="btn btn-primary btn-circle mr-2"
 					id="btnAltaProducto" data-toggle="modal"
@@ -60,8 +68,6 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 					id="btnEliminarProducto"> <i class="fas fa-trash-alt"></i>
 				</a>
 			</div>
-		</div>
-		<div class="card-body">
 			<div class="table-responsive">
 				<table class="table table-bordered" id="dataTable" width="100%"
 					cellspacing="0">
@@ -514,7 +520,7 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 	                //$('#idCategoria').val(data.idCategoria);
 	                //$('#idMarca').val(data.idMarca);
 	                
-	                $('#activo').val(data.activo);
+	                $('#activo').val(data.activo.toString());
 	                
 	                $('#idCategoria option').filter(function() {
 	                    return $(this).text() == data.categoria;
@@ -542,4 +548,4 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 </div>
 
 
-<%@ include file="components/footer.jsp"%> 
+<%@ include file="components/footer.jsp"%>

@@ -39,7 +39,14 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 			class="card-header py-3 d-flex justify-content-between align-items-center">
 			<h6 class="m-0 font-weight-bold text-primary">Depósitos de
 				Alejandro Deportes</h6>
-			<div>
+			
+		</div>
+		<div class="card-body">
+			<div style="float: left;" class="filter-options mb-3">
+			    <a href="depositos?filtro=activos" class="btn btn-primary">Mostrar Activos</a>
+			    <a href="depositos?filtro=todos" class="btn btn-secondary">Mostrar Todos</a>
+			</div>
+			<div style="float: right;">
 				<!-- Botón para abrir el modal de alta de Depósito -->
 				<a href="#" class="btn btn-primary btn-circle mr-2"
 					id="btnAltaDeposito" data-toggle="modal"
@@ -54,8 +61,6 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 					id="btnEliminarDeposito"> <i class="fas fa-trash-alt"></i>
 				</a>
 			</div>
-		</div>
-		<div class="card-body">
 			<div class="table-responsive">
 				<table class="table table-bordered" id="dataTable" width="100%"
 					cellspacing="0">
@@ -370,7 +375,7 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
                 $('#descripcion').val(data.descripcion);
                 $('#ubicacion').val(data.ubicacion);
                 $('#capacidad').val(data.capacidad);
-                $('#activo').val(data.activo);
+                $('#activo').val(data.activo.toString());
             }
         });
     });

@@ -13,7 +13,7 @@
 			<!-- Sidebar - Brand -->
 			<a
 			class="sidebar-brand d-flex align-items-center justify-content-center"
-			href="index.jsp">
+			href="menu.jsp">
 			<div class="sidebar-brand-icon rotate-n-15">
 
 				<i class="fas fa-regular fa-futbol"></i>
@@ -25,7 +25,7 @@
 		<hr class="sidebar-divider my-0">
 
 		<!-- Nav Item - Dashboard -->
-		<li class="nav-item active"><a class="nav-link" href="inventario.jsp">
+		<li class="nav-item active"><a class="nav-link" href="menu.jsp">
 			<i class="fas fa-solid fa-bars"></i> <span>Menú</span>
 		</a></li>
 

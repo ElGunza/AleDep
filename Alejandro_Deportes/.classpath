@@ -49,5 +49,6 @@
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/txw2-2.3.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/gonza/git/repository/Alejandro_Deportes/src/main/webapp/WEB-INF/lib/gson-2.8.0.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gson-2.8.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jstl-1.2.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
