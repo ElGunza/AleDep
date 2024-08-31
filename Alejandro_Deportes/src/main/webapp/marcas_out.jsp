@@ -74,7 +74,10 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 					</thead>
 					<tbody>
 						<%
-						List<Marca> listaMarcas = (List<Marca>) request.getSession().getAttribute("listaMarcas");
+						//						List<Marca> listaMarcas = (List<Marca>) request.getSession().getAttribute("listaMarcas");
+
+						List<Marca> listaMarcas = (List<Marca>) request.getAttribute("listaMarcas");
+
 						if (listaMarcas == null) {
 							listaMarcas = new ArrayList<>();
 						}
@@ -148,199 +151,41 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 	</div>
 
 	<script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Verificar si DataTable ya está inicializado
-            if (!$.fn.DataTable.isDataTable("#dataTable")) {
-                $('#dataTable').DataTable({
-                    "pageLength": 10,
-                    "lengthChange": false,
-                    "language": {
-                        "search": "Buscar:",
-                        "paginate": {
-                            "next": "Siguiente",
-                            "previous": "Anterior"
-                        },
-                        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-                        "infoEmpty": "No hay registros disponibles",
-                        "emptyTable": "No hay marcas disponibles"
-                    }
-                });
-            }
+		setupDataTableAndModal({
+			dataTableId : "#dataTable",
+			btnAltaId : "#btnAltaMarca",
+			btnEditarId : "#btnEditarMarca",
+			btnEliminarId : "#btnEliminarMarca",
+			formId : "#formAltaMarca",
+			modalId : "#altaMarcaModal",
+			modalTitleId : "#altaMarcaModalLabel",
+			altaUrl : "altaMarca",
+			editarUrl : "editarMarca",
+			eliminarUrl : "eliminarMarca",
+			entityName : "Marca",
+			limpiarFormulario : limpiarFormularioMarca,
+			llenarFormulario : llenarFormularioMarca
+		});
 
-            let selectedId = null;
+		/* FUNCIONES */
 
-            $(document).ready(function() {
-                let table = $('#dataTable').DataTable();
+		// Función para limpiar el formulario de marca
+		function limpiarFormularioMarca() {
+			$('#productoId').val('');
+			$('#nombre').val('');
+			$('#descripcion').val('');
+			$('#activo').val('true');
+		}
 
-                // Asocia el evento al tbody para seleccionar una fila
-                $('#dataTable tbody').on('click', 'tr', function() {
-                    $('#dataTable tbody tr').removeClass('selected');
-                    $(this).addClass('selected');
-                    selectedId = $(this).data('id');
-                });
+		// Función para llenar el formulario de marca con datos para editar
+		function llenarFormularioMarca(data) {
+			$('#productoId').val(data.idMarca);
+			$('#nombre').val(data.nombre);
+			$('#descripcion').val(data.descripcion || '');
+			$('#activo').val(data.activo ? 'true' : 'false');
+		}
+	</script>
 
-                // Desmarcar selección al cambiar la página
-                table.on('draw', function() {
-                    $('#dataTable tbody tr').removeClass('selected');
-                    selectedId = null;
-                });
-
-                // Botón para abrir el modal de Alta de Marca
-                $('#btnAltaMarca').on('click', function() {
-                    limpiarFormularioMarca();
-                    $('#altaMarcaModalLabel').text('Nueva Marca');
-                    $('#altaMarcaModal').modal('show');
-                });
-
-                // Manejar el envío del formulario del modal (alta o edición)
-                $('#formAltaMarca').on('submit', function(event) {
-                    event.preventDefault();
-
-                    let url = selectedId ? 'editarMarca' : 'altaMarca';
-
-                    $.ajax({
-                        url: url,
-                        type: 'POST',
-                        data: $(this).serialize(),
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Éxito',
-                                    text: response.message
-                                }).then(() => {
-                                    $('#altaMarcaModal').modal('hide');
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: 'Hubo un problema al guardar la marca.'
-                                });
-                            }
-                        },
-                        error: function() {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Hubo un problema al procesar la solicitud.'
-                            });
-                        }
-                    });
-                });
-
-                // Botón para abrir el modal de Edición de Marca
-                $('#btnEditarMarca').on('click', function() {
-                    if (selectedId) {
-                        $.ajax({
-                            url: 'editarMarca',
-                            type: 'GET',
-                            data: { id: selectedId },
-                            success: function(data) {
-                                llenarFormularioMarca(data);
-                                $('#altaMarcaModalLabel').text('Editar Marca');
-                                $('#altaMarcaModal').modal('show');
-                            },
-                            error: function() {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: 'No se pudo cargar la información de la marca.'
-                                });
-                            }
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Advertencia',
-                            text: 'Por favor, selecciona una marca primero.'
-                        });
-                    }
-                });
-
-                $('#dataTable tbody').on('dblclick', 'tr', function() {
-                    $('#btnEditarMarca').trigger('click');
-                });
-
-                // Botón para eliminar marca
-                $('#btnEliminarMarca').on('click', function() {
-                    if (selectedId) {
-                        Swal.fire({
-                            title: '¿Estás seguro?',
-                            text: "No podrás revertir esto",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Sí, eliminar'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: 'eliminarMarca',
-                                    type: 'POST',
-                                    data: { id: selectedId },
-                                    success: function(response) {
-                                        if (response.status === 'success') {
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Eliminado',
-                                                text: response.message
-                                            }).then(() => {
-                                                location.reload();
-                                            });
-                                        } else {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Error',
-                                                text: response.message
-                                            });
-                                        }
-                                    },
-                                    error: function() {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Error',
-                                            text: 'Hubo un problema al procesar la solicitud.'
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Advertencia',
-                            text: 'Por favor, selecciona una marca primero.'
-                        });
-                    }
-                });
-                
-                /* FUNCIONES */
-                        
-                // Función para limpiar el formulario de marca
-                function limpiarFormularioMarca() {
-                    $('#productoId').val('');
-                    $('#nombre').val('');
-                    $('#descripcion').val('');
-                    $('#activo').val('true');
-                }
-
-                // Función para llenar el formulario de marca con datos para editar
-                function llenarFormularioMarca(data) {
-                    
-
-                    
-                    
-                    $('#productoId').val(data.idMarca);
-                    $('#nombre').val(data.nombre);
-                    $('#descripcion').val(data.descripcion || '');
-                    $('#activo').val(data.activo ? 'true' : 'false');
-                }
-
-            });
-        });
-    </script>
 </div>
 
 <%@ include file="components/footer.jsp"%>

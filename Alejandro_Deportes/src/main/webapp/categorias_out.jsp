@@ -73,7 +73,8 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 					</thead>
 					<tbody>
 						<%
-						List<Categoria> listaCategorias = (List<Categoria>) request.getSession().getAttribute("listaCategorias");
+						List<Categoria> listaCategorias = (List<Categoria>) request.getAttribute("listaCategorias");
+
 						if (listaCategorias == null) {
 							listaCategorias = new ArrayList<>();
 						}
@@ -144,194 +145,36 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 	</div>
 
 	<script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Verificar si DataTable ya está inicializado
-            if (!$.fn.DataTable.isDataTable("#dataTable")) {
-                $('#dataTable').DataTable({
-                    "pageLength": 10,
-                    "lengthChange": false,
-                    "language": {
-                        "search": "Buscar:",
-                        "paginate": {
-                            "next": "Siguiente",
-                            "previous": "Anterior"
-                        },
-                        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-                        "infoEmpty": "No hay registros disponibles",
-                        "emptyTable": "No hay categorías disponibles"
-                    }
-                });
-            }
+		setupDataTableAndModal({
+			dataTableId : "#dataTable",
+			btnAltaId : "#btnAltaCategoria",
+			btnEditarId : "#btnEditarCategoria",
+			btnEliminarId : "#btnEliminarCategoria",
+			formId : "#formAltaCategoria",
+			modalId : "#altaCategoriaModal",
+			modalTitleId : "#altaCategoriaModalLabel",
+			altaUrl : "altaCategoria",
+			editarUrl : "editarCategoria",
+			eliminarUrl : "eliminarCategoria",
+			entityName : "Categoría",
+			limpiarFormulario : limpiarFormularioCategoria,
+			llenarFormulario : llenarFormularioCategoria
+		});
 
-            let selectedId = null;
+		// Funciones específicas para limpiar y llenar formularios
+		function limpiarFormularioCategoria() {
+			$('#categoriaId').val('');
+			$('#nombre').val('');
+			$('#activo').val('true');
+		}
 
-            $(document).ready(function() {
-                let table = $('#dataTable').DataTable();
+		function llenarFormularioCategoria(data) {
+			$('#categoriaId').val(data.idCategoria);
+			$('#nombre').val(data.nombre);
+			$('#activo').val(data.activo ? 'true' : 'false');
+		}
+	</script>
 
-                // Asocia el evento al tbody para seleccionar una fila
-                $('#dataTable tbody').on('click', 'tr', function() {
-                    $('#dataTable tbody tr').removeClass('selected');
-                    $(this).addClass('selected');
-                    selectedId = $(this).data('id');
-                });
-
-                // Desmarcar selección al cambiar la página
-                table.on('draw', function() {
-                    $('#dataTable tbody tr').removeClass('selected');
-                    selectedId = null;
-                });
-
-                // Botón para abrir el modal de Alta de Categoría
-                $('#btnAltaCategoria').on('click', function() {
-                    limpiarFormularioCategoria();
-                    $('#altaCategoriaModalLabel').text('Nueva Categoría');
-                    $('#altaCategoriaModal').modal('show');
-                });
-
-                // Manejar el envío del formulario del modal (alta o edición)
-                $('#formAltaCategoria').on('submit', function(event) {
-                    event.preventDefault();
-
-                    let url = selectedId ? 'editarCategoria' : 'altaCategoria';
-
-                    $.ajax({
-                        url: url,
-                        type: 'POST',
-                        data: $(this).serialize(),
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Éxito',
-                                    text: response.message
-                                }).then(() => {
-                                    $('#altaCategoriaModal').modal('hide');
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: 'Hubo un problema al guardar la categoría.'
-                                });
-                            }
-                        },
-                        error: function() {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Hubo un problema al procesar la solicitud.'
-                            });
-                        }
-                    });
-                });
-
-                // Botón para abrir el modal de Edición de Categoría
-                $('#btnEditarCategoria').on('click', function() {
-                    if (selectedId) {
-                        $.ajax({
-                            url: 'editarCategoria',
-                            type: 'GET',
-                            data: { id: selectedId },
-                            success: function(data) {
-                                llenarFormularioCategoria(data);
-                                $('#altaCategoriaModalLabel').text('Editar Categoría');
-                                $('#altaCategoriaModal').modal('show');
-                            },
-                            error: function() {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: 'No se pudo cargar la información de la categoría.'
-                                });
-                            }
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Advertencia',
-                            text: 'Por favor, selecciona una categoría primero.'
-                        });
-                    }
-                });
-
-                $('#dataTable tbody').on('dblclick', 'tr', function() {
-                    $('#btnEditarCategoria').trigger('click');
-                });
-
-                // Botón para eliminar categoría
-                $('#btnEliminarCategoria').on('click', function() {
-                    if (selectedId) {
-                        Swal.fire({
-                            title: '¿Estás seguro?',
-                            text: "No podrás revertir esto",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Sí, eliminar'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: 'eliminarCategoria',
-                                    type: 'POST',
-                                    data: { id: selectedId },
-                                    success: function(response) {
-                                        if (response.status === 'success') {
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Eliminado',
-                                                text: response.message
-                                            }).then(() => {
-                                                location.reload();
-                                            });
-                                        } else {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Error',
-                                                text: response.message
-                                            });
-                                        }
-                                    },
-                                    error: function() {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Error',
-                                            text: 'Hubo un problema al procesar la solicitud.'
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Advertencia',
-                            text: 'Por favor, selecciona una categoría primero.'
-                        });
-                    }
-                });
-                
-                /* FUNCIONES */
-                        
-                // Función para limpiar el formulario de categoría
-                function limpiarFormularioCategoria() {
-                    $('#productoId').val('');
-                    $('#nombre').val('');
-                    $('#activo').val('true');
-                }
-
-                // Función para llenar el formulario de categoría con datos para editar
-                function llenarFormularioCategoria(data) {
-
-                    $('#productoId').val(data.idCategoria);
-                    $('#nombre').val(data.nombre);
-                    $('#activo').val(data.activo ? 'true' : 'false');
-                }
-
-            });
-        });
-    </script>
 </div>
 
 <%@ include file="components/footer.jsp"%>

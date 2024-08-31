@@ -162,186 +162,40 @@ input[required]:focus, select[required]:focus, textarea[required]:focus
 	</div>
 
 	<script>
-        document.addEventListener("DOMContentLoaded", function() {
-            if (!$.fn.DataTable.isDataTable("#dataTable")) {
-                $('#dataTable').DataTable({
-                    "pageLength": 10,
-                    "lengthChange": false,
-                    "language": {
-                        "search": "Buscar:",
-                        "paginate": {
-                            "next": "Siguiente",
-                            "previous": "Anterior"
-                        },
-                        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-                        "infoEmpty": "No hay registros disponibles",
-                        "emptyTable": "No hay depósitos disponibles"
-                    }
-                });
-            }
+		setupDataTableAndModal({
+			dataTableId : "#dataTable",
+			btnAltaId : "#btnAltaDeposito",
+			btnEditarId : "#btnEditarDeposito",
+			btnEliminarId : "#btnEliminarDeposito",
+			formId : "#formAltaDeposito",
+			modalId : "#altaDepositoModal",
+			modalTitleId : "#altaDepositoModalLabel",
+			altaUrl : "altaDeposito",
+			editarUrl : "editarDeposito",
+			eliminarUrl : "eliminarDeposito",
+			entityName : "Depósito",
+			limpiarFormulario : limpiarFormularioDeposito,
+			llenarFormulario : llenarFormularioDeposito
+		});
 
-            let selectedId = null;
-            $(document).ready(function() {
-                let table = $('#dataTable').DataTable();
+		function limpiarFormularioDeposito() {
+			$('#DepositoId').val('');
+			$('#nombre').val('');
+			$('#descripcion').val('');
+			$('#ubicacion').val('');
+			$('#capacidad').val('');
+			$('#activo').val('true');
+		}
 
-                $('#dataTable tbody').on('click', 'tr', function() {
-                    $('#dataTable tbody tr').removeClass('selected');
-                    $(this).addClass('selected');
-                    selectedId = $(this).data('id');
-                });
-
-                table.on('draw', function() {
-                    $('#dataTable tbody tr').removeClass('selected');
-                    selectedId = null;
-                });
-
-                $('#btnAltaDeposito').on('click', function() {
-                    limpiarFormularioDeposito();
-                    $('#altaDepositoModalLabel').text('Nuevo Depósito');
-                    $('#altaDepositoModal').modal('show');
-                });
-
-                $('#formAltaDeposito').on('submit', function(event) {
-                    event.preventDefault();
-                    let url = selectedId ? 'editarDeposito' : 'altaDeposito';
-
-                    $.ajax({
-                        url: url,
-                        type: 'POST',
-                        data: $(this).serialize(),
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Depósito guardado con éxito',
-                                    text: response.message
-                                }).then(() => {
-                                    $('#altaDepositoModal').modal('hide');
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: 'Hubo un problema al guardar el depósito.'
-                                });
-                            }
-                        },
-                        error: function() {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Hubo un problema al procesar la solicitud.'
-                            });
-                        }
-                    });
-                });
-
-                $('#btnEditarDeposito').on('click', function() {
-                    if (selectedId) {
-                        $.ajax({
-                            url: 'editarDeposito',
-                            type: 'GET',
-                            data: { id: selectedId },
-                            success: function(data) {
-                                llenarFormularioDeposito(data);
-                                $('#altaDepositoModalLabel').text('Editar Depósito');
-                                $('#altaDepositoModal').modal('show');
-                            },
-                            error: function() {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: 'No se pudo cargar la información del depósito.'
-                                });
-                            }
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Advertencia',
-                            text: 'Por favor, selecciona un depósito primero.'
-                        });
-                    }
-                });
-
-                $('#dataTable tbody').on('dblclick', 'tr', function() {
-                    $('#btnEditarDeposito').trigger('click');
-                });
-
-                $('#btnEliminarDeposito').on('click', function() {
-                    if (selectedId) {
-                        Swal.fire({
-                            title: '¿Estás seguro?',
-                            text: "No podrás revertir esto",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Sí, eliminar'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: 'eliminarDeposito',
-                                    type: 'POST',
-                                    data: { id: selectedId },
-                                    success: function(response) {
-                                        if (response.status === 'success') {
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Eliminado',
-                                                text: response.message
-                                            }).then(() => {
-                                                location.reload();
-                                            });
-                                        } else {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Error',
-                                                text: response.message
-                                            });
-                                        }
-                                    },
-                                    error: function() {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Error',
-                                            text: 'Hubo un problema al procesar la solicitud.'
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Advertencia',
-                            text: 'Por favor, selecciona un depósito primero.'
-                        });
-                    }
-                });
-
-                function limpiarFormularioDeposito() {
-                    $('#DepositoId').val('');
-                    $('#nombre').val('');
-                    $('#descripcion').val('');
-                    $('#ubicacion').val('');
-                    $('#capacidad').val('');
-                    $('#activo').val('true');
-                }
-
-                function llenarFormularioDeposito(data) {
-                	
-                    $('#DepositoId').val(data.idDeposito);
-                    $('#nombre').val(data.nombre);
-                    $('#descripcion').val(data.descripcion);
-                    $('#ubicacion').val(data.ubicacion);
-                    $('#capacidad').val(data.capacidad);
-                    $('#activo').val(data.activo.toString());
-                }
-            });
-        });
-    </script>
+		function llenarFormularioDeposito(data) {
+			$('#DepositoId').val(data.idDeposito);
+			$('#nombre').val(data.nombre);
+			$('#descripcion').val(data.descripcion);
+			$('#ubicacion').val(data.ubicacion);
+			$('#capacidad').val(data.capacidad);
+			$('#activo').val(data.activo.toString());
+		}
+	</script>
 </div>
 
 <%@ include file="components/footer.jsp"%>
