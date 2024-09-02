@@ -12,6 +12,7 @@ public class Compra implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID_Compra")
     private Integer idCompra;
 
     @ManyToOne

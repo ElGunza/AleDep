@@ -11,6 +11,7 @@ public class MetodoPago implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID_MetPago")
     private Integer idMetPago;
 
     @Column(name = "Nombre")

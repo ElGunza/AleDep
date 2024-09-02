@@ -1,9 +1,10 @@
 package aledep.model;
 
 import javax.persistence.*;
-
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "VENTAS")
@@ -12,36 +13,33 @@ public class Venta implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID_Venta")
     private Integer idVenta;
 
     @ManyToOne
-    @JoinColumn(name = "ID_Cliente", nullable = false)
+    @JoinColumn(name = "ID_Cliente", nullable = true)
     private Cliente cliente;
 
     @ManyToOne
-    @JoinColumn(name = "ID_Producto", nullable = false)
-    private Producto producto;
-
-    @ManyToOne
-    @JoinColumn(name = "ID_Usuario", nullable = false)
+    @JoinColumn(name = "ID_Usuario", nullable = true)
     private Usuario usuario;
 
     @Column(name = "FechaCreacion")
     @Temporal(TemporalType.DATE)
     private Date fechaCreacion;
 
-    @Column(name = "Cantidad")
-    private Float cantidad;
-
     @Column(name = "PrecioTotal")
-    private Float precioTotal;
+    private Double precioTotal;
 
     @ManyToOne
-    @JoinColumn(name = "ID_MetPago", nullable = false)
+    @JoinColumn(name = "ID_MetPago", nullable = true)
     private MetodoPago metodoPago;
 
     @Column(name = "Activo")
     private Boolean activo;
+
+    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VentaDetalle> detalles = new ArrayList<>();
 
 	public Integer getIdVenta() {
 		return idVenta;
@@ -57,14 +55,6 @@ public class Venta implements Serializable {
 
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
-	}
-
-	public Producto getProducto() {
-		return producto;
-	}
-
-	public void setProducto(Producto producto) {
-		this.producto = producto;
 	}
 
 	public Usuario getUsuario() {
@@ -83,19 +73,11 @@ public class Venta implements Serializable {
 		this.fechaCreacion = fechaCreacion;
 	}
 
-	public Float getCantidad() {
-		return cantidad;
-	}
-
-	public void setCantidad(Float cantidad) {
-		this.cantidad = cantidad;
-	}
-
-	public Float getPrecioTotal() {
+	public Double getPrecioTotal() {
 		return precioTotal;
 	}
 
-	public void setPrecioTotal(Float precioTotal) {
+	public void setPrecioTotal(Double precioTotal) {
 		this.precioTotal = precioTotal;
 	}
 
@@ -115,18 +97,29 @@ public class Venta implements Serializable {
 		this.activo = activo;
 	}
 
-	public Venta(Integer idVenta, Cliente cliente, Producto producto, Usuario usuario, Date fechaCreacion,
-			Float cantidad, Float precioTotal, MetodoPago metodoPago, Boolean activo) {
+	public List<VentaDetalle> getDetalles() {
+		return detalles;
+	}
+
+	public void setDetalles(List<VentaDetalle> detalles) {
+		this.detalles = detalles;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public Venta(Integer idVenta, Cliente cliente, Usuario usuario, Date fechaCreacion, Double precioTotal,
+			MetodoPago metodoPago, Boolean activo, List<VentaDetalle> detalles) {
 		super();
 		this.idVenta = idVenta;
 		this.cliente = cliente;
-		this.producto = producto;
 		this.usuario = usuario;
 		this.fechaCreacion = fechaCreacion;
-		this.cantidad = cantidad;
 		this.precioTotal = precioTotal;
 		this.metodoPago = metodoPago;
 		this.activo = activo;
+		this.detalles = detalles;
 	}
 
 	public Venta() {

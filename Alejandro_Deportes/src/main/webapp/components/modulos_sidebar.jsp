@@ -39,8 +39,10 @@
 		aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
 		<div class="bg-white py-2 collapse-inner rounded">
 			<h6 class="collapse-header">Acciones:</h6>
-			<a class="collapse-item" href="ventas_out.jsp">Ventas</a> <a
-				class="collapse-item" href="devoluciones_out.jsp">Devoluciones</a>
+			<form action="ventas" method="get">
+				<a class="collapse-item" href="ventas">Ventas</a>
+			</form>
+			<a class="collapse-item" href="devoluciones_out.jsp">Devoluciones</a>
 		</div>
 	</div></li>
 

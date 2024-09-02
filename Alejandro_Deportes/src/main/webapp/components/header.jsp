@@ -11,12 +11,10 @@
 
 <title>Alejandro Deportes - Dashboard</title>
 
-<!-- Custom fonts for this template-->
-
-
-
-<link href="path/to/font-awesome/css/font-awesome.min.css"
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
 	rel="stylesheet">
+
 
 <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet"
 	type="text/css">
@@ -31,6 +29,10 @@
 <link href="vendor/datatables/dataTables.bootstrap4.min.css"
 	rel="stylesheet">
 
+<link href="css/aledep.css" rel="stylesheet" type="text/css">
 
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/css/select2.min.css" rel="stylesheet"/>
+
+<script src="js/plugins.js"></script>
 
 </head>

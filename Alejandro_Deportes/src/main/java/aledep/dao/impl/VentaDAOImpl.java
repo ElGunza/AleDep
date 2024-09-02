@@ -1,30 +1,30 @@
 package aledep.dao.impl;
 
-import aledep.dao.interfaces.ProductoDAO;
-import aledep.model.Producto;
+import aledep.dao.interfaces.VentaDAO;
+import aledep.model.Venta;
 import aledep.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.util.List;
 
-public class ProductoDAOImpl implements ProductoDAO {
+public class VentaDAOImpl implements VentaDAO {
 
     @Override
-    public void saveProducto(Producto producto) {
+    public void saveVenta(Venta venta) {
         Transaction transaction = null;
         Session session = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
-            session.save(producto);
+            session.save(venta);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new RuntimeException("Error guardando el producto", e);
+            throw new RuntimeException("Error guardando la venta", e);
         } finally {
             if (session != null) {
                 session.close();
@@ -33,20 +33,20 @@ public class ProductoDAOImpl implements ProductoDAO {
     }
 
     @Override
-    public void updateProducto(Producto producto) {
+    public void updateVenta(Venta venta) {
         Transaction transaction = null;
         Session session = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
-            session.update(producto);
+            session.update(venta);
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new RuntimeException("Error actualizando el producto", e);
+            throw new RuntimeException("Error actualizando la venta", e);
         } finally {
             if (session != null) {
                 session.close();
@@ -55,25 +55,25 @@ public class ProductoDAOImpl implements ProductoDAO {
     }
 
     @Override
-    public void deleteProducto(Integer id) {
+    public void deleteVenta(Integer id) {
         Transaction transaction = null;
         Session session = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
-            Producto producto = session.get(Producto.class, id);
-            if (producto != null) {
-                session.delete(producto);
+            Venta venta = session.get(Venta.class, id);
+            if (venta != null) {
+                session.delete(venta);
                 transaction.commit();
             } else {
-                throw new RuntimeException("Producto no encontrado para eliminar");
+                throw new RuntimeException("Venta no encontrada para eliminar");
             }
         } catch (Exception e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new RuntimeException("Error eliminando el producto", e);
+            throw new RuntimeException("Error eliminando la venta", e);
         } finally {
             if (session != null) {
                 session.close();
@@ -82,16 +82,16 @@ public class ProductoDAOImpl implements ProductoDAO {
     }
 
     @Override
-    public void desactivarProducto(Integer id) {
+    public void desactivarVenta(Integer id) {
         Transaction transaction = null;
         Session session = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
-            int updatedEntities = session.createQuery("update Producto set activo = false where idProducto = :id")
+            int updatedEntities = session.createQuery("update Venta set activo = false where idVenta = :id")
                     .setParameter("id", id).executeUpdate();
             if (updatedEntities == 0) {
-                throw new RuntimeException("Producto no encontrado para desactivar");
+                throw new RuntimeException("Venta no encontrada para desactivar");
             }
             transaction.commit();
         } catch (Exception e) {
@@ -99,7 +99,7 @@ public class ProductoDAOImpl implements ProductoDAO {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new RuntimeException("Error desactivando el producto", e);
+            throw new RuntimeException("Error desactivando la venta", e);
         } finally {
             if (session != null) {
                 session.close();
@@ -108,60 +108,32 @@ public class ProductoDAOImpl implements ProductoDAO {
     }
 
     @Override
-    public List<Producto> getAllProductos() {
+    public List<Venta> getAllVentas() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from Producto", Producto.class).list();
+            return session.createQuery("from Venta", Venta.class).list();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Error obteniendo todos los productos", e);
+            throw new RuntimeException("Error obteniendo todas las ventas", e);
         }
     }
 
     @Override
-    public Producto getProductoById(Integer id) {
+    public Venta getVentaById(Integer id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Producto.class, id);
+            return session.get(Venta.class, id);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Error obteniendo el producto por ID", e);
+            throw new RuntimeException("Error obteniendo la venta por ID", e);
         }
     }
 
     @Override
-    public List<Producto> getProductosActivos() {
+    public List<Venta> getVentasActivas() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Producto WHERE activo = true", Producto.class).list();
+            return session.createQuery("FROM Venta WHERE activo = true", Venta.class).list();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Error obteniendo productos activos", e);
-        }
-    }
-
-    @Override
-    public void actualizarStock(Integer idProducto, int nuevaCantidad) {
-        Transaction transaction = null;
-        Session session = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
-            transaction = session.beginTransaction();
-            Producto producto = session.get(Producto.class, idProducto);
-            if (producto != null) {
-                producto.setCantidad(nuevaCantidad);
-                session.merge(producto);
-                transaction.commit();
-            } else {
-                throw new RuntimeException("Producto no encontrado para actualizar el stock");
-            }
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-            throw new RuntimeException("Error actualizando el stock del producto", e);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
+            throw new RuntimeException("Error obteniendo ventas activas", e);
         }
     }
 }

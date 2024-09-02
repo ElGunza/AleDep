@@ -52,7 +52,7 @@ public class Producto implements Serializable {
 	@Column(name = "CantidadMin")
 	private Integer cantidadMin;
 
-	@Column(name = "PrecioCompra", nullable = false)
+	@Column(name = "PrecioCompra", nullable = true)
 	private Double precioCompra;
 
 	@Column(name = "PrecioVenta", nullable = false)

@@ -38,6 +38,7 @@
         <mapping class="aledep.model.Usuario"/>
         <mapping class="aledep.model.Rol"/>
         <mapping class="aledep.model.Venta"/>
+        <mapping class="aledep.model.VentaDetalle"/>
         <mapping class="aledep.model.Cliente"/>
         <mapping class="aledep.model.MetodoPago"/>
         <mapping class="aledep.model.Compra"/>

@@ -20,6 +20,7 @@ public class ProductoServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final ProductoService productoService = new ProductoService();
 
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

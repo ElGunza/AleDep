@@ -189,6 +189,12 @@
         });
     }
 
+	//AGREGAR OTRA FUNCION ACA ABAJO 
+
+
+
     // Exportar la función como un plugin de jQuery
+    // (Despues de agregar una funcion, declarla aca bajo asi se puede utilizar)
     window.setupDataTableAndModal = setupDataTableAndModal;
+
 })();

@@ -1,29 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
-<style>
-tr.selected {
-	background-color: #007bff !important; /* Color azul intenso */
-	color: #ffffff; /* Texto blanco para contraste */
-	font-weight: bold; /* Hacer el texto más grueso */
-	transition: background-color 0.3s ease; /* Suavizar la transición */
-}
 
-/* Estilo para el asterisco al lado de la etiqueta solo si el campo es obligatorio */
-label.required::after {
-	content: "*"; /* Asterisco para campos obligatorios */
-	color: red; /* Color rojo */
-	margin-left: 5px;
-	/* Espacio entre el texto de la etiqueta y el asterisco */
-	font-weight: bold; /* Asterisco en negrita */
-}
-
-/* Opcional: estilo adicional cuando el campo obligatorio está en foco */
-input[required]:focus, select[required]:focus, textarea[required]:focus
-	{
-	outline: none;
-	border-color: darkred; /* Borde más oscuro en foco */
-}
-</style>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="aledep.model.Marca"%>
