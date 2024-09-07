@@ -41,8 +41,7 @@ public class RegistrarVentaServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			Integer clienteId = Integer.parseInt(request.getParameter("clienteId"));
-			Integer metodoPagoId = Integer.parseInt(request.getParameter("metodoPagoId"));
-
+			Integer metodoPagoId = Integer.parseInt(request.getParameter("metodoPagoId"));			
 			Cliente cliente = clienteService.getClienteById(clienteId);
 			MetodoPago metodoPago = metodoPagoService.getMetodoPagoById(metodoPagoId);
 

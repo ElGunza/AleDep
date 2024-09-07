@@ -74,7 +74,7 @@
                             if (response.status === 'success') {
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Éxito',
+                                    title: 'Registro guardado con exito',
                                     text: response.message
                                 }).then(() => {
                                     $(modalId).modal('hide');

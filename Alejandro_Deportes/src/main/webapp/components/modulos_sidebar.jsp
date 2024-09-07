@@ -145,8 +145,13 @@
 		aria-labelledby="headingConfig" data-parent="#accordionSidebar">
 		<div class="bg-white py-2 collapse-inner rounded">
 			<h6 class="collapse-header">Acciones:</h6>
-			<a class="collapse-item" href="usuarios_out.jsp">Usuarios</a> <a
-				class="collapse-item" href="roles_out.jsp">Roles</a> <a
+
+
+			<form action="usuarios" method="get">
+				<a class="collapse-item" href="usuarios">Usuarios</a>
+			</form>
+
+			<a class="collapse-item" href="roles_out.jsp">Roles</a> <a
 				class="collapse-item" href="config_gral.jsp">Configuración
 				General</a>
 		</div>

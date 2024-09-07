@@ -34,17 +34,36 @@ public class AltaProductoServlet extends HttpServlet {
         try {
             cargarListasEnSesion(request.getSession());
 
-            // Obtener el producto por ID y devolverlo en formato JSON
-            int productoId = Integer.parseInt(request.getParameter("id"));
-            Producto producto = productoService.getProductoById(productoId);
+            String idProductoStr = request.getParameter("id");
+            Producto producto;
+            ProductoDTO productoDTO;
 
-            if (producto != null) {
-                ProductoDTO productoDTO = productoService.convertirAProductoDTO(producto);
-                response.setContentType("application/json");
-                response.getWriter().write(new Gson().toJson(productoDTO));
+            if (idProductoStr != null && !idProductoStr.isEmpty()) {
+                // Si se proporciona un ID de producto, obtener el producto existente
+                int productoId = Integer.parseInt(idProductoStr);
+                producto = productoService.getProductoById(productoId);
+
+                if (producto != null) {
+                    productoDTO = productoService.convertirAProductoDTO(producto);
+                } else {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Producto no encontrado");
+                    return;
+                }
             } else {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Producto no encontrado");
+                // Si no se proporciona un ID, es un nuevo producto; generar un nuevo código
+                producto = new Producto();
+                int idSiguienteProducto = productoService.obtenerSiguienteIdProducto(); // Obtener el siguiente ID de producto
+                String codigoGenerado = productoService.generarCodigoProducto(idSiguienteProducto);
+                producto.setCodigo(codigoGenerado);
+
+                // Crear un ProductoDTO para el nuevo producto con el código generado
+                productoDTO = productoService.convertirAProductoDTO(producto);
             }
+
+            // Devolver el ProductoDTO en formato JSON para ser usado en el modal
+            response.setContentType("application/json");
+            response.getWriter().write(new Gson().toJson(productoDTO));
+
         } catch (Exception e) {
             manejarExcepcion(response, e, "Error al obtener el producto.");
         }
@@ -57,6 +76,7 @@ public class AltaProductoServlet extends HttpServlet {
         try {
             Producto producto = obtenerProductoDesdeRequest(request);
 
+            // Guardar el producto usando el servicio, que generará el código si es necesario
             productoService.saveProducto(producto);
 
             // Responder con un JSON indicando éxito
@@ -71,11 +91,6 @@ public class AltaProductoServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Carga las listas de categorías, marcas, proveedores y depósitos en la sesión.
-     *
-     * @param session La sesión HTTP en la que se guardarán las listas.
-     */
     private void cargarListasEnSesion(HttpSession session) {
         session.setAttribute("listaCategorias", categoriaService.getAllCategorias());
         session.setAttribute("listaMarcas", marcaService.getAllMarcas());
@@ -95,14 +110,19 @@ public class AltaProductoServlet extends HttpServlet {
 
         Producto producto = (idProducto != null) ? productoService.getProductoById(idProducto) : new Producto();
 
-        // Configurar los atributos del producto
-        producto.setCodigo(request.getParameter("codigo"));
         producto.setNombre(request.getParameter("nombre"));
         producto.setTalle(request.getParameter("talle"));
         producto.setCantidad(parseInt(request.getParameter("cantidad"), 0));
         producto.setPrecioVenta(parseDouble(request.getParameter("precioVenta"), 0.0));
         producto.setPrecioCompra(parseDouble(request.getParameter("precioCompra"), 0.0));
         producto.setActivo(true);
+
+        // No permitir que el código sea modificado
+        if (producto.getCodigo() == null || producto.getCodigo().isEmpty()) {
+            int idSiguienteProducto = productoService.obtenerSiguienteIdProducto(); // Obtener el siguiente ID de producto
+            String codigoGenerado = productoService.generarCodigoProducto(idSiguienteProducto);
+            producto.setCodigo(codigoGenerado); // Asignar el código generado
+        }
 
         // Configurar las entidades relacionadas
         producto.setCategoria(categoriaService.getCategoriaById(parseInt(request.getParameter("idCategoria"), 0)));
@@ -113,26 +133,11 @@ public class AltaProductoServlet extends HttpServlet {
         return producto;
     }
 
-    /**
-     * Maneja las excepciones y responde con un mensaje de error JSON.
-     *
-     * @param response El objeto HttpServletResponse.
-     * @param e        La excepción capturada.
-     * @param mensaje  El mensaje de error a enviar al cliente.
-     * @throws IOException Si ocurre un error al escribir la respuesta.
-     */
     private void manejarExcepcion(HttpServletResponse response, Exception e, String mensaje) throws IOException {
         e.printStackTrace();
         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, mensaje);
     }
 
-    /**
-     * Parsea un String a un int, devolviendo un valor predeterminado en caso de error.
-     *
-     * @param value        El String a parsear.
-     * @param defaultValue El valor predeterminado a devolver en caso de error.
-     * @return El int parseado o el valor predeterminado.
-     */
     private int parseInt(String value, int defaultValue) {
         try {
             return Integer.parseInt(value);
@@ -141,13 +146,6 @@ public class AltaProductoServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Parsea un String a un double, devolviendo un valor predeterminado en caso de error.
-     *
-     * @param value        El String a parsear.
-     * @param defaultValue El valor predeterminado a devolver en caso de error.
-     * @return El double parseado o el valor predeterminado.
-     */
     private double parseDouble(String value, double defaultValue) {
         try {
             return Double.parseDouble(value);

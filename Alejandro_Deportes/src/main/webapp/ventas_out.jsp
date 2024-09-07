@@ -23,12 +23,20 @@
 		<div
 			class="card-header py-3 d-flex justify-content-between align-items-center">
 			<h6 class="m-0 font-weight-bold text-primary">Ventas Registradas</h6>
-			<a href="#" class="btn btn-primary btn-circle" id="btnRegistrarVenta"
-				data-toggle="modal" data-target="#registrarVentaModal"> <i
-				class="fas fa-plus"></i>
-			</a>
 		</div>
 		<div class="card-body">
+
+			<div style="float: right" class="mb-3">
+				<a href="#" class="btn btn-primary btn-circle mr-2"
+					id="btnRegistrarVenta" data-toggle="modal"
+					data-target="#registrarVentaModal"> <i class="fas fa-plus"></i>
+				</a> <a href="#" class="btn btn-warning btn-circle mr-2"
+					id="btnEditarVenta"> <i class="fas fa-edit"></i>
+				</a> <a href="#" class="btn btn-danger btn-circle" id="btnEliminarVenta">
+					<i class="fas fa-trash-alt"></i>
+				</a>
+			</div>
+
 			<div class="table-responsive">
 				<table class="table table-bordered" id="dataTable" width="100%"
 					cellspacing="0">
@@ -53,7 +61,7 @@
                         %>
 						<tr data-id="<%=venta.getIdVenta()%>">
 							<td><%=venta.getCliente().getNombre()%></td>
-							<td><%=venta.getCliente().getNombre()%><td> 
+							<td><%=venta.getUsuario().getNombre()%></td>
 							<td><%=venta.getMetodoPago().getNombre()%></td>
 							<td><%=venta.getFechaCreacion()%></td>
 							<td>$ <%=String.format("%.2f", venta.getPrecioTotal())%></td>
@@ -78,8 +86,6 @@
 
 	<!-- Modal para Registrar Venta -->
 
-	<!-- tabindex="-1" -->
-
 	<div class="modal fade" id="registrarVentaModal" role="dialog"
 		aria-labelledby="registrarVentaModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
@@ -95,7 +101,6 @@
 				<form id="formRegistrarVenta" action="registrarVenta" method="post">
 					<div class="modal-body">
 						<div class="row">
-							<!-- Primera columna -->
 							<div class="col-md-6">
 								<div class="form-group">
 									<label for="clienteId" class="required">Cliente</label> <select
@@ -136,7 +141,6 @@
 									</select>
 								</div>
 							</div>
-							<!-- Segunda columna -->
 							<div class="col-md-6">
 								<h5>Productos</h5>
 								<div id="productsContainer">
@@ -160,46 +164,103 @@
 
 	<script>
         $(document).ready(function() {
-            // Inicializar Select2 en todos los selects
             $('.select2').select2({
                 width: '100%',
                 placeholder: "Seleccionar una opción",
                 allowClear: true
             });
 
-            // Manejar el envío del formulario de registro de venta
-            $('#formRegistrarVenta').on('submit', function(event) {
-                event.preventDefault();
+            let selectedId = null;
 
-                $.ajax({
-                    url: $(this).attr('action'), // URL del servlet
-                    type: 'POST',
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            // Mostrar mensaje de éxito
-                            $('#successMessage').text(response.message).fadeIn().delay(3000).fadeOut();
-
-                            // Limpiar el formulario
-                            $('#formRegistrarVenta')[0].reset();
-                            $('.select2').val(null).trigger('change'); // Reset Select2
-
-                            // Cerrar el modal
-                            $('#registrarVentaModal').modal('hide');
-
-                            // Recargar la tabla de ventas para reflejar los nuevos datos
-                            location.reload(); // Si deseas recargar la tabla
-                        } else {
-                            // Mostrar mensaje de error si algo salió mal
-                            $('#errorMessage').text('Hubo un problema al registrar la venta.').fadeIn().delay(3000).fadeOut();
-                        }
-                    },
-                    error: function() {
-                        // Manejar cualquier error inesperado
-                        $('#errorMessage').text('Ocurrió un error inesperado.').fadeIn().delay(3000).fadeOut();
-                    }
-                });
+            // Seleccionar fila
+            $('#dataTable tbody').on('click', 'tr', function () {
+                $('#dataTable tbody tr').removeClass('selected');
+                $(this).addClass('selected');
+                selectedId = $(this).data('id');
             });
+
+            // Botón para abrir el modal de Registrar Venta
+            $('#btnRegistrarVenta').on('click', function () {
+                $('#formRegistrarVenta')[0].reset();
+                $('.select2').val(null).trigger('change');
+                $('#registrarVentaModalLabel').text('Registrar Nueva Venta');
+                $('#registrarVentaModal').modal('show');
+            });
+
+            // Botón para abrir el modal de Editar Venta
+            $('#btnEditarVenta').on('click', function () {
+                if (selectedId) {
+                    $.ajax({
+                        url: 'editarVenta',
+                        type: 'GET',
+                        data: { id: selectedId },
+                        success: function (data) {
+                            llenarFormularioVenta(data);
+                            $('#registrarVentaModalLabel').text('Editar Venta');
+                            $('#registrarVentaModal').modal('show');
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'No se pudo cargar la información de la venta.'
+                            });
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Advertencia',
+                        text: 'Por favor, selecciona una venta primero.'
+                    });
+                }
+            });
+
+            // Botón para eliminar una venta
+            $('#btnEliminarVenta').on('click', function () {
+                if (selectedId) {
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: "No podrás revertir esto",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sí, eliminar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: 'eliminarVenta',
+                                type: 'POST',
+                                data: { id: selectedId },
+                                success: function (response) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Eliminado',
+                                        text: 'La venta ha sido eliminada.'
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                },
+                                error: function () {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: 'Hubo un problema al eliminar la venta.'
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Advertencia',
+                        text: 'Por favor, selecciona una venta primero.'
+                    });
+                }
+            });
+
         });
 
         // Agregar productos dinámicamente
@@ -240,6 +301,12 @@
             var row = button.parentNode;
             document.getElementById("productsContainer").removeChild(row);
         }
+
+        function llenarFormularioVenta(data) {
+            $('#clienteId').val(data.clienteId).trigger('change');
+            $('#metodoPagoId').val(data.metodoPagoId).trigger('change');
+            // Aquí puedes agregar más campos si es necesario.
+        }
     </script>
 </div>
-<%@ include file="components/footer.jsp"%>
+

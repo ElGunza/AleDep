@@ -20,4 +20,6 @@ public interface ProductoDAO {
 
 	void actualizarStock(Integer id_producto, int nuevaCantidad);
 
+	int obtenerUltimoIdProducto();
+
 }
