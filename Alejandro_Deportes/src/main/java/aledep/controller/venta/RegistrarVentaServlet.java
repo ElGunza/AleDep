@@ -6,19 +6,20 @@ import aledep.model.Producto;
 import aledep.dto.VentaDTO;
 import aledep.model.Cliente;
 import aledep.model.MetodoPago;
+import aledep.model.Usuario;
 import aledep.service.VentaService;
 import aledep.service.ProductoService;
 import aledep.service.ClienteService;
 import aledep.service.MetodoPagoService;
+//import aledep.service.UsuarioService;
 
 import com.google.gson.Gson;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,22 +36,35 @@ public class RegistrarVentaServlet extends HttpServlet {
 	private final ProductoService productoService = new ProductoService();
 	private final ClienteService clienteService = new ClienteService();
 	private final MetodoPagoService metodoPagoService = new MetodoPagoService();
+//	private final UsuarioService usuarioService = new UsuarioService();
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
+			// Obtener cliente y método de pago
 			Integer clienteId = Integer.parseInt(request.getParameter("clienteId"));
-			Integer metodoPagoId = Integer.parseInt(request.getParameter("metodoPagoId"));			
+			Integer metodoPagoId = Integer.parseInt(request.getParameter("metodoPagoId"));
 			Cliente cliente = clienteService.getClienteById(clienteId);
 			MetodoPago metodoPago = metodoPagoService.getMetodoPagoById(metodoPagoId);
 
+			// Obtener el usuario logueado desde la sesión
+			HttpSession session = request.getSession();
+			Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
+
+			if (usuarioLogueado == null) {
+				throw new IllegalArgumentException("Usuario no autenticado.");
+			}
+
+			// Crear una nueva venta
 			Venta venta = new Venta();
 			venta.setCliente(cliente);
 			venta.setMetodoPago(metodoPago);
+			venta.setUsuario(usuarioLogueado); // Asignar el usuario logueado
 			venta.setFechaCreacion(new Date());
 			venta.setActivo(true);
 
+			// Procesar los productos de la venta
 			List<VentaDetalle> detalles = new ArrayList<>();
 			double precioTotal = 0;
 
@@ -62,6 +76,7 @@ public class RegistrarVentaServlet extends HttpServlet {
 				Producto producto = productoService.getProductoById(productoId);
 				Float cantidad = Float.parseFloat(cantidades[i]);
 
+				// Crear detalle de la venta
 				VentaDetalle detalle = new VentaDetalle();
 				detalle.setProducto(producto);
 				detalle.setCantidad(cantidad);
@@ -70,15 +85,19 @@ public class RegistrarVentaServlet extends HttpServlet {
 
 				detalles.add(detalle);
 
+				// Calcular el precio total
 				precioTotal += cantidad * producto.getPrecioVenta();
 
+				// Actualizar el stock del producto
 				producto.setCantidad(producto.getCantidad() - cantidad.intValue());
 				productoService.actualizarStock(productoId, producto.getCantidad());
 			}
 
+			// Asignar detalles y precio total a la venta
 			venta.setDetalles(detalles);
 			venta.setPrecioTotal(precioTotal);
 
+			// Guardar la venta
 			ventaService.saveVenta(venta);
 
 			// Convertir Venta a VentaDTO para la respuesta

@@ -1,31 +1,32 @@
+
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="aledep.model.Venta"%>
+<%@ page import="aledep.model.VentaDetalle"%>
 <%@ page import="aledep.model.Cliente"%>
 <%@ page import="aledep.model.Usuario"%>
 <%@ page import="aledep.model.MetodoPago"%>
 <%@ page import="aledep.model.Producto"%>
+<%@ page import="aledep.dto.VentaDTO"%>
+<%@ page import="aledep.dto.VentaDetalleDTO"%>
 <%@ include file="components/header.jsp"%>
 <%@ include file="components/titleheader.jsp"%>
 <%@ include file="components/modulos_sidebar.jsp"%>
 <%@ include file="components/topbar.jsp"%>
-
 <div class="container-fluid">
 	<!-- Mensajes de éxito y error -->
 	<div id="successMessage" class="alert alert-success"
 		style="display: none;"></div>
 	<div id="errorMessage" class="alert alert-danger"
 		style="display: none;"></div>
-
 	<div class="card shadow mb-4">
 		<div
 			class="card-header py-3 d-flex justify-content-between align-items-center">
 			<h6 class="m-0 font-weight-bold text-primary">Ventas Registradas</h6>
 		</div>
 		<div class="card-body">
-
 			<div style="float: right" class="mb-3">
 				<a href="#" class="btn btn-primary btn-circle mr-2"
 					id="btnRegistrarVenta" data-toggle="modal"
@@ -36,7 +37,6 @@
 					<i class="fas fa-trash-alt"></i>
 				</a>
 			</div>
-
 			<div class="table-responsive">
 				<table class="table table-bordered" id="dataTable" width="100%"
 					cellspacing="0">
@@ -47,45 +47,51 @@
 							<th>Método de Pago</th>
 							<th>Fecha de Creación</th>
 							<th>Precio Total</th>
+							<th>Productos</th>
 						</tr>
 					</thead>
 					<tbody>
 						<%
-                        List<Venta> listaVentas = (List<Venta>) request.getSession().getAttribute("listaVentas");
-                        if (listaVentas == null) {
-                            listaVentas = new ArrayList<>(); // Inicializa la lista para evitar null
-                        }
-
-                        if (!listaVentas.isEmpty()) {
-                            for (Venta venta : listaVentas) {
-                        %>
-						<tr data-id="<%=venta.getIdVenta()%>">
-							<td><%=venta.getCliente().getNombre()%></td>
-							<td><%=venta.getUsuario().getNombre()%></td>
-							<td><%=venta.getMetodoPago().getNombre()%></td>
-							<td><%=venta.getFechaCreacion()%></td>
-							<td>$ <%=String.format("%.2f", venta.getPrecioTotal())%></td>
+                            List<VentaDTO> listaVentasDTO = (List<VentaDTO>) request.getSession().getAttribute("listaVentasDTO");
+                            if (listaVentasDTO != null && !listaVentasDTO.isEmpty()) {
+                                for (VentaDTO ventaDTO : listaVentasDTO) {
+                            %>
+						<tr data-id="<%=ventaDTO.getIdVenta()%>">
+							<td><%=ventaDTO.getCliente()%></td>
+							<td><%=ventaDTO.getUsuario()%></td>
+							<td><%=ventaDTO.getMetodoPago()%></td>
+							<td><%=ventaDTO.getFechaCreacionStr()%></td>
+							<td>$<%=String.format("%.2f", ventaDTO.getPrecioTotal())%></td>
+							<td>
+								<ul>
+									<%
+                                        for (VentaDetalleDTO detalleDTO : ventaDTO.getDetalles()) {
+                                    %>
+									<li>Producto: <%=detalleDTO.getProducto()%> - Cantidad: <%=detalleDTO.getCantidad()%>
+									</li>
+									<%
+                                        }
+                                    %>
+								</ul>
+							</td>
 						</tr>
 						<%
-                        }
-                        } else {
+                                }
+                            } else {
                         %>
 						<tr>
 							<td colspan="5">No hay ventas registradas</td>
 						</tr>
 						<%
-                        }
+                            }
                         %>
 					</tbody>
 				</table>
 			</div>
 		</div>
 	</div>
-
 	<%@ include file="components/footer.jsp"%>
-
-	<!-- Modal para Registrar Venta -->
-
+	<!-- Modal para Registrar/Editar Venta -->
 	<div class="modal fade" id="registrarVentaModal" role="dialog"
 		aria-labelledby="registrarVentaModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
@@ -101,6 +107,7 @@
 				<form id="formRegistrarVenta" action="registrarVenta" method="post">
 					<div class="modal-body">
 						<div class="row">
+							<!-- Columna izquierda: Cliente, Usuario, Fecha de Creación -->
 							<div class="col-md-6">
 								<div class="form-group">
 									<label for="clienteId" class="required">Cliente</label> <select
@@ -108,60 +115,107 @@
 										required>
 										<option value="">Seleccionar Cliente</option>
 										<%
-                                        List<Cliente> clientes = (List<Cliente>) request.getSession().getAttribute("listaClientes");
-                                        if (clientes != null) {
-                                            for (Cliente cliente : clientes) {
-                                        %>
+                                            List<Cliente> clientes = (List<Cliente>) request.getSession().getAttribute("listaClientes");
+                                            if (clientes != null) {
+                                                for (Cliente cliente : clientes) {
+                                            %>
 										<option value="<%=cliente.getIdCliente()%>">
 											<%=cliente.getNombre()%>
 										</option>
 										<%
-                                        }
-                                        }
-                                        %>
+                                                }
+                                            }
+                                            %>
 									</select>
 								</div>
+								<div class="form-group">
+									<label for="usuarioId" class="required">Usuario</label> <select
+										class="form-control select2" id="usuarioId" name="usuarioId"
+										required>
+										<option value="">Seleccionar Usuario</option>
+										<%
+                                            List<Usuario> usuarios = (List<Usuario>) request.getSession().getAttribute("listaUsuarios");
+                                            if (usuarios != null) {
+                                                for (Usuario usuario : usuarios) {
+                                            %>
+										<option value="<%=usuario.getIdUsuario()%>">
+											<%=usuario.getNombre()%>
+										</option>
+										<%
+                                                }
+                                            }
+                                            %>
+									</select>
+								</div>
+								<div class="form-group">
+									<label for="fechaCreacion">Fecha de Creación</label> <input
+										type="date" class="form-control" id="fechaCreacion"
+										name="fechaCreacion" required>
+								</div>
+							</div>
+							<!-- Columna derecha: Método de Pago -->
+							<div class="col-md-6">
 								<div class="form-group">
 									<label for="metodoPagoId" class="required">Método de
 										Pago</label> <select class="form-control select2" id="metodoPagoId"
 										name="metodoPagoId" required>
 										<option value="">Seleccionar Método de Pago</option>
 										<%
-                                        List<MetodoPago> metodosPago = (List<MetodoPago>) request.getSession().getAttribute("listaMetodosPago");
-                                        if (metodosPago != null) {
-                                            for (MetodoPago metodoPago : metodosPago) {
-                                        %>
+                                            List<MetodoPago> metodosPago = (List<MetodoPago>) request.getSession().getAttribute("listaMetodosPago");
+                                            if (metodosPago != null) {
+                                                for (MetodoPago metodoPago : metodosPago) {
+                                            %>
 										<option value="<%=metodoPago.getIdMetPago()%>">
 											<%=metodoPago.getNombre()%>
 										</option>
 										<%
-                                        }
-                                        }
-                                        %>
+                                                }
+                                            }
+                                            %>
 									</select>
 								</div>
 							</div>
-							<div class="col-md-6">
-								<h5>Productos</h5>
-								<div id="productsContainer">
+						</div>
+						<!-- Tabla de productos -->
+						<h5>Productos</h5>
+						<div class="table-responsive">
+							<table class="table table-bordered" id="productsTable"
+								width="100%" cellspacing="0">
+								<thead>
+									<tr>
+										<th>Producto</th>
+										<th>Cantidad</th>
+										<th>Precio Unitario</th>
+										<th>Total</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+								<tbody id="productsContainer">
 									<!-- Aquí se agregarán las filas de productos -->
-								</div>
-								<button type="button" class="btn btn-secondary"
-									onclick="addProductRow()">Agregar Producto</button>
-							</div>
+								</tbody>
+							</table>
+						</div>
+						<!-- Botón para agregar producto -->
+						<button type="button" class="btn btn-secondary mb-3"
+							onclick="addProductRow()">Agregar Producto</button>
+						<!-- Precio total destacado -->
+						<div class="form-group text-right">
+							<h4>
+								Total: $ <span id="precioTotal">0.00</span>
+							</h4>
+							<input type="hidden" id="precioTotalInput" name="precioTotal">
 						</div>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary"
 							data-dismiss="modal">Cancelar</button>
-						<button type="submit" class="btn btn-primary">Registrar
+						<button type="submit" class="btn btn-primary">Guardar
 							Venta</button>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
-
 	<script>
         $(document).ready(function() {
             $('.select2').select2({
@@ -173,14 +227,19 @@
             let selectedId = null;
 
             // Seleccionar fila
-            $('#dataTable tbody').on('click', 'tr', function () {
+            $('#dataTable tbody').on('click', 'tr', function() {
                 $('#dataTable tbody tr').removeClass('selected');
                 $(this).addClass('selected');
                 selectedId = $(this).data('id');
             });
 
+            // Doble click para editar venta
+            $('#dataTable tbody').on('dblclick', 'tr', function() {
+                $('#btnEditarVenta').trigger('click');
+            });
+
             // Botón para abrir el modal de Registrar Venta
-            $('#btnRegistrarVenta').on('click', function () {
+            $('#btnRegistrarVenta').on('click', function() {
                 $('#formRegistrarVenta')[0].reset();
                 $('.select2').val(null).trigger('change');
                 $('#registrarVentaModalLabel').text('Registrar Nueva Venta');
@@ -188,18 +247,18 @@
             });
 
             // Botón para abrir el modal de Editar Venta
-            $('#btnEditarVenta').on('click', function () {
+            $('#btnEditarVenta').on('click', function() {
                 if (selectedId) {
                     $.ajax({
                         url: 'editarVenta',
                         type: 'GET',
                         data: { id: selectedId },
-                        success: function (data) {
+                        success: function(data) {
                             llenarFormularioVenta(data);
                             $('#registrarVentaModalLabel').text('Editar Venta');
                             $('#registrarVentaModal').modal('show');
                         },
-                        error: function () {
+                        error: function() {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
@@ -217,7 +276,7 @@
             });
 
             // Botón para eliminar una venta
-            $('#btnEliminarVenta').on('click', function () {
+            $('#btnEliminarVenta').on('click', function() {
                 if (selectedId) {
                     Swal.fire({
                         title: '¿Estás seguro?',
@@ -233,7 +292,7 @@
                                 url: 'eliminarVenta',
                                 type: 'POST',
                                 data: { id: selectedId },
-                                success: function (response) {
+                                success: function(response) {
                                     Swal.fire({
                                         icon: 'success',
                                         title: 'Eliminado',
@@ -242,7 +301,7 @@
                                         location.reload();
                                     });
                                 },
-                                error: function () {
+                                error: function() {
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Error',
@@ -260,32 +319,30 @@
                     });
                 }
             });
-
         });
 
         // Agregar productos dinámicamente
         function addProductRow() {
-            var row = document.createElement("div");
-            row.classList.add("form-group");
+            var row = document.createElement("tr");
 
             row.innerHTML = `
-                <label for="productoId" class="required">Producto</label>
-                <select class="productselect form-control" name="productoId" required>
-                    <%
-                    List<Producto> productos = (List<Producto>) request.getSession().getAttribute("listaProductos");
-                    if (productos != null) {
-                        for (Producto producto : productos) {
-                    %>
-                    <option value="<%=producto.getIdProducto()%>">
-                        <%=producto.getNombre()%>
-                    </option>
-                    <%}
+                    <td>
+                        <select class="productselect form-control" name="productoId[]" required>
+                            <%
+                            List<Producto> productos = (List<Producto>) request.getSession().getAttribute("listaProductos");
+                            if (productos != null) {
+                                for (Producto producto : productos) {
+                            %>
+                            <option value="<%=producto.getIdProducto()%>"><%=producto.getNombre()%></option>
+                            <%}
 }%>
-                </select>
-                <label for="cantidad" class="required">Cantidad</label>
-                <input type="number" class="form-control" name="cantidad" value="1" min="1" required>
-                <button type="button" class="btn btn-danger mt-2" onclick="removeProductRow(this)">Eliminar</button>
-                <hr>`;
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-control cantidad" name="cantidad[]" value="1" min="1" required></td>
+                    <td><input type="text" class="form-control precio-unitario" name="precioUnitario[]" readonly></td>
+                    <td><input type="text" class="form-control total-producto" name="totalProducto[]" readonly></td>
+                    <td><button type="button" class="btn btn-danger mt-2" onclick="removeProductRow(this)">Eliminar</button></td>
+                `;
 
             document.getElementById("productsContainer").appendChild(row);
 
@@ -294,19 +351,73 @@
                 width: '100%',
                 placeholder: "Seleccionar una opción",
             });
+
+            actualizarTotalVenta();
         }
 
         // Remover producto
         function removeProductRow(button) {
-            var row = button.parentNode;
-            document.getElementById("productsContainer").removeChild(row);
+            var row = button.closest('tr');
+            row.remove();
+            actualizarTotalVenta();
         }
+
+        // Actualizar el total de la venta
+        function actualizarTotalVenta() {
+            let totalVenta = 0;
+
+            $('#productsContainer tr').each(function() {
+                const cantidad = parseFloat($(this).find('.cantidad').val()) || 0;
+                const precioUnitario = parseFloat($(this).find('.productselect option:selected').data('precio')) || 0;
+                const totalProducto = cantidad * precioUnitario;
+
+                $(this).find('.precio-unitario').val(precioUnitario.toFixed(2));
+                $(this).find('.total-producto').val(totalProducto.toFixed(2));
+
+                totalVenta += totalProducto;
+            });
+
+            $('#precioTotal').text(totalVenta.toFixed(2));
+            $('#precioTotalInput').val(totalVenta.toFixed(2));
+        }
+
+        // Actualizar el total cuando se cambian los productos o cantidades
+        $('#productsContainer').on('change', '.productselect, .cantidad', function() {
+            actualizarTotalVenta();
+        });
 
         function llenarFormularioVenta(data) {
-            $('#clienteId').val(data.clienteId).trigger('change');
-            $('#metodoPagoId').val(data.metodoPagoId).trigger('change');
-            // Aquí puedes agregar más campos si es necesario.
-        }
-    </script>
-</div>
+            $('#clienteId').val(data.idCliente).trigger('change');
+            $('#usuarioId').val(data.idUsuario).trigger('change');
+            $('#metodoPagoId').val(data.idMetodoPago).trigger('change');
+            
+            // Establecer la fecha de creación (en formato 'YYYY-MM-DD' si es necesario)
+            const fechaFormateada = new Date(data.fechaCreacion).toISOString().split('T')[0];
+            $('#fechaCreacion').val(fechaFormateada);
 
+            $('#precioTotal').val(data.precioTotal.toFixed(2));
+
+            // Limpiar el contenedor de productos antes de llenarlo
+            $('#productsContainer').empty();
+
+            // Añadir cada detalle de producto al formulario
+            data.detalles.forEach(function(detalle) {
+                addProductRow(); // Agrega una fila de producto
+
+                // Establecer el valor del producto en el select
+                $('#productsContainer tr:last select.productselect').val(detalle.idProducto).trigger('change');
+
+                // Establecer la cantidad y precio unitario
+                $('#productsContainer tr:last input[name="cantidad[]"]').val(detalle.cantidad);
+                $('#productsContainer tr:last input[name="precioUnitario[]"]').val(detalle.precioUnitario.toFixed(2));
+
+                // Calcular y asignar el total por producto
+                const totalProducto = detalle.cantidad * detalle.precioUnitario;
+                $('#productsContainer tr:last input[name="totalProducto[]"]').val(totalProducto.toFixed(2));
+            });
+
+            actualizarTotalVenta();
+        }
+
+        </script>
+</div>

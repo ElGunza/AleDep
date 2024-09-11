@@ -126,6 +126,18 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             throw new RuntimeException("Error obteniendo el usuario por ID", e);
         }
     }
+    
+    @Override
+    public Usuario getUsuarioByEmail(String email) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Usuario WHERE email = :email", Usuario.class)
+                    .setParameter("email", email)
+                    .uniqueResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error obteniendo el usuario por email", e);
+        }
+    }
 
     @Override
     public List<Usuario> getUsuariosActivos() {

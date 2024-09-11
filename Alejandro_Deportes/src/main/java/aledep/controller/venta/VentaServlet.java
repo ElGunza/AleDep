@@ -3,6 +3,7 @@ package aledep.controller.venta;
 import aledep.model.Venta;
 import aledep.model.Producto;
 import aledep.model.Usuario;
+import aledep.dto.VentaDTO;
 import aledep.model.Cliente;
 import aledep.model.MetodoPago;
 import aledep.service.VentaService;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/ventas")
@@ -37,9 +39,21 @@ public class VentaServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		try {
-			List<Venta> ventas = ventaService.getAllVentas();
-			guardarVentasEnSesion(request.getSession(), ventas);
 
+			request.getSession().removeAttribute("listaVentasDTO");
+			
+			List<Venta> ventas = ventaService.getAllVentas();
+			List<VentaDTO> ventasDTO = new ArrayList<>();
+			for (Venta venta : ventas) {
+				VentaDTO ventaDTO = ventaService.convertirAVentaDTO(venta);
+				ventasDTO.add(ventaDTO);
+			}
+
+
+			request.getSession().setAttribute("listaVentasDTO", ventasDTO);
+
+			System.out.println("Ventas cargadas: " + ventasDTO.size());
+			
 			// Cargar la lista de productos
 			List<Producto> productos = productoService.getProductosActivos();
 			guardarProductosEnSesion(request.getSession(), productos);
@@ -65,9 +79,9 @@ public class VentaServlet extends HttpServlet {
 		session.setAttribute("listaUsuarios", usuarios);
 	}
 
-	private void guardarVentasEnSesion(HttpSession session, List<Venta> ventas) {
-		session.setAttribute("listaVentas", ventas);
-	}
+//	private void guardarVentasEnSesion(HttpSession session, List<Venta> ventas) {
+//		session.setAttribute("listaVentas", ventas);
+//	}
 
 	private void guardarProductosEnSesion(HttpSession session, List<Producto> productos) {
 		session.setAttribute("listaProductos", productos);

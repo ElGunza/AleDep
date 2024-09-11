@@ -168,7 +168,6 @@
             llenarFormulario : llenarFormularioUsuario
         });
 
-        // Función para limpiar el formulario de usuario
         function limpiarFormularioUsuario() {
             $('#usuarioId').val('');
             $('#nombre').val('');
@@ -178,7 +177,6 @@
             $('#activo').val('true');
         }
 
-        // Función para llenar el formulario de usuario con datos para editar
         function llenarFormularioUsuario(data) {
             const usuario = data.data;
             $('#usuarioId').val(usuario.idUsuario);

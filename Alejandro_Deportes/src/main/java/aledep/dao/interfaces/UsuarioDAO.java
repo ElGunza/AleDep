@@ -14,7 +14,10 @@ public interface UsuarioDAO {
 
     List<Usuario> getAllUsuarios();
 
+    List<Usuario> getUsuariosActivos();
+    
     Usuario getUsuarioById(Integer id);
 
-    List<Usuario> getUsuariosActivos();
+    Usuario getUsuarioByEmail(String email);
+
 }

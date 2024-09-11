@@ -50,17 +50,14 @@ public class AltaProductoServlet extends HttpServlet {
                     return;
                 }
             } else {
-                // Si no se proporciona un ID, es un nuevo producto; generar un nuevo código
                 producto = new Producto();
                 int idSiguienteProducto = productoService.obtenerSiguienteIdProducto(); // Obtener el siguiente ID de producto
                 String codigoGenerado = productoService.generarCodigoProducto(idSiguienteProducto);
                 producto.setCodigo(codigoGenerado);
 
-                // Crear un ProductoDTO para el nuevo producto con el código generado
                 productoDTO = productoService.convertirAProductoDTO(producto);
             }
 
-            // Devolver el ProductoDTO en formato JSON para ser usado en el modal
             response.setContentType("application/json");
             response.getWriter().write(new Gson().toJson(productoDTO));
 

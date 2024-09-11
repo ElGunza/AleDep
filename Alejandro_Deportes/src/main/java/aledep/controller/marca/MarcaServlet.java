@@ -33,10 +33,6 @@ public class MarcaServlet extends HttpServlet {
                 marcas = marcaService.getMarcasActivas();
             }
 
-            // Inicializa la lista de productos para cada marca si es lazy-loaded
-//            marcas.forEach(marca -> marca.getProductos().size());
-
-            // Guardar la lista de marcas en el request (no en la sesión)
             request.setAttribute("listaMarcas", marcas);
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("marcas_out.jsp");

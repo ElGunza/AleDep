@@ -26,10 +26,8 @@ public class EliminarMarcaServlet extends HttpServlet {
         try {
             int marcaId = Integer.parseInt(request.getParameter("id"));
 
-            // Llama al método de servicio para desactivar la marca
             marcaService.desactivarMarca(marcaId);
 
-            // Responder con un JSON indicando éxito
             Map<String, String> responseData = new HashMap<>();
             responseData.put("status", "success");
             responseData.put("message", "Marca eliminada con éxito");

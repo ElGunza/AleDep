@@ -298,14 +298,12 @@
 		$('#altaProductoModal').on('show.bs.modal', function(event) {
 			var modal = $(this);
 
-			// Realizar una petición al servidor para obtener los datos del nuevo producto
 			$.ajax({
-				url : 'altaProducto', // Aquí llamas al servlet doGet sin pasar un ID para obtener un nuevo código
+				url : 'altaProducto',
 				method : 'GET',
 				success : function(data) {
-					// Asegúrate de que 'data' contenga el campo 'codigo'
 					if (data.codigo) {
-						modal.find('#codigo').val(data.codigo); // Asignar el código al input
+						modal.find('#codigo').val(data.codigo);
 					}
 				},
 				error : function() {
