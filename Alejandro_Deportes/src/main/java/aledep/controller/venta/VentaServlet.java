@@ -49,7 +49,6 @@ public class VentaServlet extends HttpServlet {
 				ventasDTO.add(ventaDTO);
 			}
 
-
 			request.getSession().setAttribute("listaVentasDTO", ventasDTO);
 
 			System.out.println("Ventas cargadas: " + ventasDTO.size());

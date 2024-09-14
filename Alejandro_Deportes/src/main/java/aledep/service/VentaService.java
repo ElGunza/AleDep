@@ -6,7 +6,7 @@ import aledep.dto.VentaDTO;
 import aledep.dto.VentaDetalleDTO;
 import aledep.model.Venta;
 import aledep.model.VentaDetalle;
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,18 +15,19 @@ import org.hibernate.Hibernate;
 public class VentaService {
 	private final VentaDAO ventaDAO;
 
+
 	public VentaService() {
 		this.ventaDAO = new VentaDAOImpl();
 	}
 
 	public void saveVenta(Venta venta) {
-		validarVenta(venta);
 		ventaDAO.saveVenta(venta);
 	}
 
 	public void updateVenta(Venta venta) {
-		validarVenta(venta);
-		ventaDAO.updateVenta(venta);
+	    Venta ventaExistente = ventaDAO.getVentaById(venta.getIdVenta());
+	    ventaExistente.getDetalles().removeIf(detalle -> !venta.getDetalles().contains(detalle));
+	    ventaDAO.updateVenta(venta);
 	}
 
 	public void deleteVenta(Integer id) {
@@ -41,10 +42,6 @@ public class VentaService {
 		return ventaDAO.getAllVentas();
 	}
 
-//    public Venta getVentaById(Integer id) {
-//        return ventaDAO.getVentaById(id);
-//    }
-
 	public Venta getVentaById(Integer id) {
 		Venta venta = ventaDAO.getVentaById(id);
 		if (venta != null) {
@@ -56,10 +53,16 @@ public class VentaService {
 	public VentaDTO convertirAVentaDTO(Venta venta) {
 		VentaDTO dto = new VentaDTO();
 		dto.setIdVenta(venta.getIdVenta());
-		dto.setFechaCreacion(venta.getFechaCreacion());
+
+		if (venta.getFechaCreacion() != null) {
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			dto.setFechaCreacionStr(formatter.format(venta.getFechaCreacion()));
+		} else {
+			dto.setFechaCreacionStr("Fecha no disponible");
+		}
+
 		dto.setPrecioTotal(venta.getPrecioTotal());
 
-		// Cliente
 		if (venta.getCliente() != null) {
 			dto.setIdCliente(venta.getCliente().getIdCliente());
 			dto.setCliente(venta.getCliente().getNombre());
@@ -68,7 +71,6 @@ public class VentaService {
 			dto.setCliente("Sin cliente");
 		}
 
-		// Método de Pago
 		if (venta.getMetodoPago() != null) {
 			dto.setIdMetodoPago(venta.getMetodoPago().getIdMetPago());
 			dto.setMetodoPago(venta.getMetodoPago().getNombre());
@@ -77,7 +79,6 @@ public class VentaService {
 			dto.setMetodoPago("Sin método de pago");
 		}
 
-		// Usuario
 		if (venta.getUsuario() != null) {
 			dto.setIdUsuario(venta.getUsuario().getIdUsuario());
 			dto.setUsuario(venta.getUsuario().getNombre());
@@ -107,15 +108,15 @@ public class VentaService {
 		return dto;
 	}
 
-	private void validarVenta(Venta venta) {
-		if (venta.getCliente() == null) {
-			throw new IllegalArgumentException("El cliente no puede estar vacío.");
-		}
-		if (venta.getMetodoPago() == null) {
-			throw new IllegalArgumentException("El método de pago no puede estar vacío.");
-		}
-		if (venta.getUsuario() == null) {
-			throw new IllegalArgumentException("El usuario no puede estar vacío.");
-		}
-	}
+//	private void validarVenta(Venta venta) {
+//		if (venta.getCliente() == null) {
+//			throw new IllegalArgumentException("El cliente no puede estar vacío.");
+//		}
+//		if (venta.getMetodoPago() == null) {
+//			throw new IllegalArgumentException("El método de pago no puede estar vacío.");
+//		}
+//		if (venta.getUsuario() == null) {
+//			throw new IllegalArgumentException("El usuario no puede estar vacío.");
+//		}
+//	}
 }

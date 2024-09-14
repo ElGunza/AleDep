@@ -54,6 +54,7 @@
 							<th>Talles disponibles</th>
 							<th>Cantidad</th>
 							<th>Precio de venta</th>
+							<th>Activo</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -77,6 +78,7 @@
 							<td><%=producto.getTalle()%></td>
 							<td><%=producto.getCantidad()%></td>
 							<td>$ <%=String.format("%.2f", producto.getPrecioVenta())%>
+							<td><%=producto.getActivo() ? "Sí" : "No"%></td>
 							</td>
 						</tr>
 						<%
