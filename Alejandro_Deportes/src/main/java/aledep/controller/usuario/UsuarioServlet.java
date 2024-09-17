@@ -9,6 +9,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -33,7 +35,9 @@ public class UsuarioServlet extends HttpServlet {
 				usuarios = usuarioService.getUsuariosActivos();
 			}
 
-			request.setAttribute("listaUsuarios", usuarios);
+//			request.setAttribute("listaUsuarios", usuarios);
+
+			guardarUsuariosEnSesion(request.getSession(), usuarios);
 
 			RequestDispatcher dispatcher = request.getRequestDispatcher("usuarios_out.jsp");
 			dispatcher.forward(request, response);
@@ -42,5 +46,9 @@ public class UsuarioServlet extends HttpServlet {
 			e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al obtener los usuarios");
 		}
+	}
+
+	private void guardarUsuariosEnSesion(HttpSession session, List<Usuario> usuarios) {
+		session.setAttribute("listaUsuarios", usuarios);
 	}
 }

@@ -39,7 +39,7 @@
 				</a>
 			</div>
 			<div class="table-responsive">
-				<table class="table table-bordered" id="dataTable" width="100%"
+				<table class="table table-bordered" id="dataTableMarca" width="100%"
 					cellspacing="0">
 					<thead>
 						<tr>
@@ -129,7 +129,7 @@
 
 	<script>
 		setupDataTableAndModal({
-			dataTableId : "#dataTable",
+			dataTableId : "#dataTableMarca",
 			btnAltaId : "#btnAltaMarca",
 			btnEditarId : "#btnEditarMarca",
 			btnEliminarId : "#btnEliminarMarca",

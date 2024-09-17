@@ -30,20 +30,20 @@
 					data-target="#registrarVentaModal"> <i class="fas fa-plus"></i>
 				</a> <a href="#" class="btn btn-warning btn-circle mr-2"
 					id="btnEditarVenta"> <i class="fas fa-edit"></i>
-				</a> <a href="#" class="btn btn-danger btn-circle" id="btnEliminarVenta">
+				</a> <a href="#" class="btn btn-danger btn-circle" id="btnAnularVenta">
 					<i class="fas fa-trash-alt"></i>
 				</a>
 			</div>
 			<div class="table-responsive">
-				<table class="table table-bordered" id="dataTable" width="100%"
-					cellspacing="0">
+				<table class="table table-bordered" id="dataTableVentas">
 					<thead>
 						<tr>
 							<th>N° Venta</th>
+							<th>Fecha de Creación</th>
 							<th>Cliente</th>
 							<th>Usuario</th>
 							<th>Método de Pago</th>
-							<th>Fecha de Creación</th>
+
 							<th>Precio Total</th>
 							<th>Productos</th>
 						</tr>
@@ -56,18 +56,18 @@
 						%>
 						<tr data-id="<%=ventaDTO.getIdVenta()%>">
 							<td><%=ventaDTO.getIdVenta()%></td>
-
+							<td><%=ventaDTO.getFechaCreacionStr()%></td>
 							<td><%=ventaDTO.getCliente()%></td>
 							<td><%=ventaDTO.getUsuario()%></td>
 							<td><%=ventaDTO.getMetodoPago()%></td>
-							<td><%=ventaDTO.getFechaCreacionStr()%></td>
+
 							<td>$ <%=String.format("%.2f", ventaDTO.getPrecioTotal())%></td>
 							<td>
 								<ul>
 									<%
 									for (VentaDetalleDTO detalleDTO : ventaDTO.getDetalles()) {
 									%>
-									<li>Producto: <%=detalleDTO.getProducto()%> - Cantidad: <%=detalleDTO.getCantidad()%></li>
+									<li><%=detalleDTO.getProducto()%> - Cantidad: <%=detalleDTO.getCantidad()%></li>
 									<%
 									}
 									%>
@@ -182,8 +182,7 @@
 						<!-- Tabla de productos -->
 						<h5>Productos</h5>
 						<div class="table-responsive">
-							<table class="table table-bordered" id="productsTable"
-								width="100%" cellspacing="0">
+							<table class="table table-bordered" id="productsTable">
 								<thead>
 									<tr>
 										<th>Producto</th>
@@ -215,8 +214,13 @@
 	<%@ include file="components/footer.jsp"%>
 	<script>
     $(document).ready(function() {
-        // Inicializamos los select con Select2
-        $('.select2').select2({
+
+    	$('#dataTableVentas').DataTable({
+            "order": [[0, "desc"]]  // Ordena por la primera columna de forma descendente
+        });
+
+    	
+    	$('.select2').select2({
             width: '100%',
             placeholder: "Seleccionar una opción",
             allowClear: true,
@@ -233,14 +237,14 @@
         let preciosUnitarios = []; // Array para almacenar precios unitarios de cada producto
 
         // Seleccionar fila de la tabla
-        $('#dataTable tbody').on('click', 'tr', function() {
-            $('#dataTable tbody tr').removeClass('selected');
+        $('#dataTableVentas tbody').on('click', 'tr', function() {
+            $('#dataTableVentas tbody tr').removeClass('selected');
             $(this).addClass('selected');
             selectedId = $(this).data('id');
         });
 
         // Doble click para editar la venta
-        $('#dataTable tbody').on('dblclick', 'tr', function() {
+        $('#dataTableVentas tbody').on('dblclick', 'tr', function() {
             $('#btnEditarVenta').trigger('click');
         });
 

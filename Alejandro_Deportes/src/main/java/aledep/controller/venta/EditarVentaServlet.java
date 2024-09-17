@@ -9,6 +9,7 @@ import aledep.model.MetodoPago;
 import aledep.model.Usuario;
 import aledep.service.VentaService;
 import aledep.service.ProductoService;
+import aledep.service.UsuarioService;
 import aledep.service.ClienteService;
 import aledep.service.MetodoPagoService;
 
@@ -18,7 +19,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -36,7 +36,8 @@ public class EditarVentaServlet extends HttpServlet {
     private final ProductoService productoService = new ProductoService();
     private final ClienteService clienteService = new ClienteService();
     private final MetodoPagoService metodoPagoService = new MetodoPagoService();
-
+    private final UsuarioService usuarioService = new UsuarioService();
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -61,26 +62,20 @@ public class EditarVentaServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
         	
-        	System.out.println("SERVLET EDITAR VENTA");
-        	
             Integer clienteId = parseId(request.getParameter("clienteId"));
             Integer metodoPagoId = parseId(request.getParameter("metodoPagoId"));
             Integer ventaId = parseId(request.getParameter("ventaId"));
+            Integer usuarioId = parseId(request.getParameter("usuarioId"));
 
             Cliente cliente = clienteService.getClienteById(clienteId);
             MetodoPago metodoPago = metodoPagoService.getMetodoPagoById(metodoPagoId);
 
+            Usuario usuario = usuarioService.getUsuarioById(usuarioId);
+            
             validarDatos(cliente, metodoPago, ventaId);
 
-            HttpSession session = request.getSession();
-            Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
-
-            if (usuarioLogueado == null) {
-                throw new IllegalArgumentException("Usuario no autenticado.");
-            }
-
             Venta venta = ventaService.getVentaById(ventaId);
-            actualizarDatosVenta(venta, cliente, metodoPago, usuarioLogueado, request);
+            actualizarDatosVenta(venta, cliente, metodoPago, usuario, request);
 
             List<VentaDetalle> detalles = procesarDetalles(request, venta);
             double precioTotal = calcularPrecioTotal(detalles);

@@ -9,6 +9,7 @@ import aledep.model.MetodoPago;
 import aledep.model.Usuario;
 import aledep.service.VentaService;
 import aledep.service.ProductoService;
+import aledep.service.UsuarioService;
 import aledep.service.ClienteService;
 import aledep.service.MetodoPagoService;
 
@@ -36,15 +37,19 @@ public class RegistrarVentaServlet extends HttpServlet {
     private final ProductoService productoService = new ProductoService();
     private final ClienteService clienteService = new ClienteService();
     private final MetodoPagoService metodoPagoService = new MetodoPagoService();
-
+    private final UsuarioService usuarioService = new UsuarioService();
+    
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             Integer clienteId = parseId(request.getParameter("clienteId"));
             Integer metodoPagoId = parseId(request.getParameter("metodoPagoId"));
+            Integer usuarioId = parseId(request.getParameter("usuarioId"));
             Cliente cliente = clienteService.getClienteById(clienteId);
             MetodoPago metodoPago = metodoPagoService.getMetodoPagoById(metodoPagoId);
+            Usuario usuario = usuarioService.getUsuarioById(usuarioId);
             
             HttpSession session = request.getSession();
             Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
@@ -53,10 +58,12 @@ public class RegistrarVentaServlet extends HttpServlet {
                 throw new IllegalArgumentException("Datos de cliente, método de pago o usuario inválidos.");
             }
 
+            
+            
             Venta venta = new Venta();
             venta.setCliente(cliente);
             venta.setMetodoPago(metodoPago);
-            venta.setUsuario(usuarioLogueado);
+            venta.setUsuario(usuario);
             venta.setFechaCreacion(new Date());
             venta.setActivo(true);
 

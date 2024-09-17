@@ -25,7 +25,7 @@
                     Todos</a>
             </div>
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" id="dataTableDepositos" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th style="display: none;">ID</th>
@@ -131,7 +131,7 @@
     </div>
     <script>
     setupDataTableAndModal({
-        dataTableId: "#dataTable",
+        dataTableId: "#dataTableDepositos",
         btnAltaId: "#btnAltaDeposito",
         btnEditarId: "#btnEditarDeposito",
         btnEliminarId: "#btnEliminarDeposito",

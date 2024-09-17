@@ -108,15 +108,4 @@ public class VentaService {
 		return dto;
 	}
 
-//	private void validarVenta(Venta venta) {
-//		if (venta.getCliente() == null) {
-//			throw new IllegalArgumentException("El cliente no puede estar vacío.");
-//		}
-//		if (venta.getMetodoPago() == null) {
-//			throw new IllegalArgumentException("El método de pago no puede estar vacío.");
-//		}
-//		if (venta.getUsuario() == null) {
-//			throw new IllegalArgumentException("El usuario no puede estar vacío.");
-//		}
-//	}
 }

@@ -56,7 +56,9 @@
 		aria-labelledby="headingClientes" data-parent="#accordionSidebar">
 		<div class="bg-white py-2 collapse-inner rounded">
 			<h6 class="collapse-header">Acciones:</h6>
-			<a class="collapse-item" href="clientes_out.jsp">Clientes</a> <a
+			<form action="clientes" method="get">
+				<a class="collapse-item" href="clientes">Clientes</a>
+			</form> <a
 				class="collapse-item" href="historial_clientes.jsp">Historial</a> <a
 				class="collapse-item" href="deudas_cobros.jsp">Deudas y Cobros</a>
 		</div>

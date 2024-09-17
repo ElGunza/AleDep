@@ -36,7 +36,7 @@
                 </a>
             </div>
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" id="dataTableUsers" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th style="display: none;">ID</th>
@@ -153,7 +153,7 @@
 
     <script>
         setupDataTableAndModal({
-            dataTableId : "#dataTable",
+            dataTableId : "#dataTableUsers",
             btnAltaId : "#btnAltaUsuario",
             btnEditarId : "#btnEditarUsuario",
             btnEliminarId : "#btnEliminarUsuario",
@@ -178,7 +178,7 @@
         }
 
         function llenarFormularioUsuario(data) {
-            const usuario = data.data;
+            const usuario = data;
             $('#usuarioId').val(usuario.idUsuario);
             $('#nombre').val(usuario.nombre);
             $('#email').val(usuario.email);

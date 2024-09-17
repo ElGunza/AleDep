@@ -53,7 +53,6 @@ public class VentaServlet extends HttpServlet {
 
 			System.out.println("Ventas cargadas: " + ventasDTO.size());
 			
-			// Cargar la lista de productos
 			List<Producto> productos = productoService.getProductosActivos();
 			guardarProductosEnSesion(request.getSession(), productos);
 
@@ -77,10 +76,6 @@ public class VentaServlet extends HttpServlet {
 	private void guardarUsuariosEnSesion(HttpSession session, List<Usuario> usuarios) {
 		session.setAttribute("listaUsuarios", usuarios);
 	}
-
-//	private void guardarVentasEnSesion(HttpSession session, List<Venta> ventas) {
-//		session.setAttribute("listaVentas", ventas);
-//	}
 
 	private void guardarProductosEnSesion(HttpSession session, List<Producto> productos) {
 		session.setAttribute("listaProductos", productos);
