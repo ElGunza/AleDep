@@ -15,8 +15,11 @@ public class ProductoService {
 	}
 
 	public void saveProducto(Producto producto) {
+		
+	System.out.println("SAVE PRODUCTO");
+		
 		if (producto.getCodigo() == null || producto.getCodigo().isEmpty()) {
-			int idProducto = obtenerSiguienteIdProducto(); // Obtener el siguiente ID de producto
+			int idProducto = obtenerSiguienteIdProducto(); 
 			String codigoGenerado = generarCodigoProducto(idProducto);
 			producto.setCodigo(codigoGenerado);
 		}
@@ -58,12 +61,10 @@ public class ProductoService {
 		return convertirProductoAProductoDTO(producto);
 	}
 
-	// Método para generar el código de producto con formato PXXX
 	public String generarCodigoProducto(int idProducto) {
-		return String.format("P%03d", idProducto); // Ejemplo: P001, P002, P003...
+		return String.format("P%03d", idProducto); 
 	}
 
-	// Método para obtener el siguiente ID de producto
 	public int obtenerSiguienteIdProducto() {
 		return productoDAO.obtenerUltimoIdProducto() + 1;
 	}

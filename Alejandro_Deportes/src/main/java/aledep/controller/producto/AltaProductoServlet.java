@@ -73,7 +73,6 @@ public class AltaProductoServlet extends HttpServlet {
         try {
             Producto producto = obtenerProductoDesdeRequest(request);
 
-            // Guardar el producto usando el servicio, que generará el código si es necesario
             productoService.saveProducto(producto);
 
             // Responder con un JSON indicando éxito

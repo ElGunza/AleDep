@@ -3,50 +3,49 @@ package aledep.model;
 import javax.persistence.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "COMPRAS")
 public class Compra implements Serializable {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_Compra")
-    private Integer idCompra;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "ID_Compra")
+	private Integer idCompra;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_Proveedor", nullable = false)
-    private Proveedor proveedor;
+	@ManyToOne
+	@JoinColumn(name = "ID_Proveedor", nullable = false)
+	private Proveedor proveedor;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_Producto", nullable = false)
-    private Producto producto;
+	@ManyToOne
+	@JoinColumn(name = "ID_Usuario", nullable = false)
+	private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_Usuario", nullable = false)
-    private Usuario usuario;
+	@Column(name = "FechaCreacion")
+	@Temporal(TemporalType.DATE)
+	private Date fechaCreacion;
 
-    @Column(name = "FechaCreacion")
-    @Temporal(TemporalType.DATE)
-    private Date fechaCreacion;
+	@Column(name = "FechaEntrega")
+	@Temporal(TemporalType.DATE)
+	private Date fechaEntrega;
 
-    @Column(name = "FechaEntrega")
-    @Temporal(TemporalType.DATE)
-    private Date fechaEntrega;
+	@Column(name = "PrecioTotal")
+	private Double precioTotal;
 
-    @Column(name = "PrecioTotal")
-    private Float precioTotal;
 
-    @Column(name = "Cantidad")
-    private Integer cantidad;
+	@ManyToOne
+	@JoinColumn(name = "ID_MetPago", nullable = false)
+	private MetodoPago metodoPago;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_MetPago", nullable = false)
-    private MetodoPago metodoPago;
+	@Column(name = "Activo")
+	private Boolean activo;
 
-    @Column(name = "Activo")
-    private Boolean activo;
+	@OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<CompraDetalle> detalles = new ArrayList<>();
 
 	public Integer getIdCompra() {
 		return idCompra;
@@ -62,14 +61,6 @@ public class Compra implements Serializable {
 
 	public void setProveedor(Proveedor proveedor) {
 		this.proveedor = proveedor;
-	}
-
-	public Producto getProducto() {
-		return producto;
-	}
-
-	public void setProducto(Producto producto) {
-		this.producto = producto;
 	}
 
 	public Usuario getUsuario() {
@@ -96,20 +87,12 @@ public class Compra implements Serializable {
 		this.fechaEntrega = fechaEntrega;
 	}
 
-	public Float getPrecioTotal() {
+	public Double getPrecioTotal() {
 		return precioTotal;
 	}
 
-	public void setPrecioTotal(Float precioTotal) {
+	public void setPrecioTotal(Double precioTotal) {
 		this.precioTotal = precioTotal;
-	}
-
-	public Integer getCantidad() {
-		return cantidad;
-	}
-
-	public void setCantidad(Integer cantidad) {
-		this.cantidad = cantidad;
 	}
 
 	public MetodoPago getMetodoPago() {
@@ -127,29 +110,37 @@ public class Compra implements Serializable {
 	public void setActivo(Boolean activo) {
 		this.activo = activo;
 	}
+	
+	public List<CompraDetalle> getDetalles() {
+		return detalles;
+	}
 
-	public Compra(Integer idCompra, Proveedor proveedor, Producto producto, Usuario usuario, Date fechaCreacion,
-			Date fechaEntrega, Float precioTotal, Integer cantidad, MetodoPago metodoPago, Boolean activo) {
+	public void setDetalles(List<CompraDetalle> detalles) {
+		this.detalles = detalles;
+	}
+
+	public Compra(Integer idCompra, Proveedor proveedor, Usuario usuario, Date fechaCreacion,
+			Date fechaEntrega, Double precioTotal, MetodoPago metodoPago, Boolean activo,
+			List<CompraDetalle> detalles) {
 		super();
 		this.idCompra = idCompra;
 		this.proveedor = proveedor;
-		this.producto = producto;
 		this.usuario = usuario;
 		this.fechaCreacion = fechaCreacion;
 		this.fechaEntrega = fechaEntrega;
 		this.precioTotal = precioTotal;
-		this.cantidad = cantidad;
 		this.metodoPago = metodoPago;
 		this.activo = activo;
+		this.detalles = detalles;
 	}
+
+	
 
 	public Compra() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-    // Getters y Setters
-    
-    
-    
+	// Getters y Setters
+
 }

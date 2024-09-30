@@ -58,9 +58,9 @@
 			<h6 class="collapse-header">Acciones:</h6>
 			<form action="clientes" method="get">
 				<a class="collapse-item" href="clientes">Clientes</a>
-			</form> <a
-				class="collapse-item" href="historial_clientes.jsp">Historial</a> <a
-				class="collapse-item" href="deudas_cobros.jsp">Deudas y Cobros</a>
+			</form>
+			<a class="collapse-item" href="historial_clientes.jsp">Historial</a>
+			<a class="collapse-item" href="deudas_cobros.jsp">Deudas y Cobros</a>
 		</div>
 	</div></li>
 
@@ -75,8 +75,10 @@
 		aria-labelledby="headingCompras" data-parent="#accordionSidebar">
 		<div class="bg-white py-2 collapse-inner rounded">
 			<h6 class="collapse-header">Acciones:</h6>
-			<a class="collapse-item" href="compras_out.jsp">Compras</a> <a
-				class="collapse-item" href="seg_envios.jsp">Seguimiento de
+			<form action="compras" method="get">
+				<a class="collapse-item" href="compras">Compras</a>
+			</form>
+			<a class="collapse-item" href="seg_envios.jsp">Seguimiento de
 				Envíos</a>
 		</div>
 	</div></li>
@@ -90,8 +92,10 @@
 		data-parent="#accordionSidebar">
 		<div class="bg-white py-2 collapse-inner rounded">
 			<h6 class="collapse-header">Acciones:</h6>
-			<a class="collapse-item" href="proveedores_out.jsp">Proveedores</a> <a
-				class="collapse-item" href="historial_proveedores.jsp">Historial</a>
+			<form action="proveedores" method="get">
+				<a class="collapse-item" href="proveedores">Proveedores</a>
+			</form>
+			<a class="collapse-item" href="historial_proveedores.jsp">Historial</a>
 		</div>
 	</div></li>
 
@@ -153,9 +157,19 @@
 				<a class="collapse-item" href="usuarios">Usuarios</a>
 			</form>
 
-			<a class="collapse-item" href="roles_out.jsp">Roles</a> <a
-				class="collapse-item" href="config_gral.jsp">Configuración
-				General</a>
+			<form action="roles" method="get">
+				<a class="collapse-item" href="roles">Roles</a>
+			</form>
+
+			<form action="permisos" method="get">
+				<a class="collapse-item" href="permisos">Permisos</a>
+			</form>
+
+			<form action="configuracion" method="get">
+				<a class="collapse-item" href="config_gral.jsp">Configuración
+					General</a>
+			</form>
+
 		</div>
 	</div></li>
 

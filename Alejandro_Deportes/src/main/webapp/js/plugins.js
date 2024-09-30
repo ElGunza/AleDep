@@ -1,6 +1,9 @@
 (function() {
     // Función reutilizable para configurar DataTable y modales
     function setupDataTableAndModal(options) {
+	
+	debugger;
+		
         const {
             dataTableId,
             btnAltaId,

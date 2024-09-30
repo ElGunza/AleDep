@@ -8,27 +8,15 @@
 <hibernate-configuration>
 	<session-factory>
 		<property name="connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
-		<!-- <property name="connection.url">jdbc:sqlserver://GONZALO\\SQLEXPRESS;databaseName=AlejandroDeportes</property> -->
-
-<!-- PRUEBA 1 -->
 		<property name="connection.url">jdbc:sqlserver://GONZALO\SQLEXPRESS;databaseName=AlejandroDeportes</property>
-
-<!-- PRUEBA 2 -->
-<!-- <property name="connection.url">jdbc:sqlserver://127.0.0.1:1433;databaseName=AlejandroDeportes</property>
- -->
-
 		<property name="connection.username">sa</property>
 		<property name="connection.password">12345678</property>
-
-		<!-- JDBC connection pool (use the built-in) -->
-		<property name="connection.pool_size">3</property>
+		<property name="connection.pool_size">10</property>
+		
 		<property name="dialect">org.hibernate.dialect.SQLServerDialect</property>
-		<!-- Echo all executed SQL to stdout -->
 		<property name="show_sql">true</property>
-		<!-- Drop and re-create the database schema on startup -->
 		<property name="hbm2ddl.auto">update</property>
 
-		<!-- Names the annotated entity class -->
 		<mapping class="aledep.model.Producto"/>
         <mapping class="aledep.model.Categoria"/>
         <mapping class="aledep.model.Subcategoria"/>
@@ -42,8 +30,8 @@
         <mapping class="aledep.model.Cliente"/>
         <mapping class="aledep.model.MetodoPago"/>
         <mapping class="aledep.model.Compra"/>
-
-
+        <mapping class="aledep.model.CompraDetalle"/>
+        <mapping class="aledep.model.Permiso"/>
 
 	</session-factory>
 </hibernate-configuration>

@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="java.util.List"%>
-<%@ page import="aledep.model.Cliente"%>
+<%@ page import="aledep.model.Proveedor"%>
 <%@ page import="aledep.model.Usuario"%>
 <%@ page import="aledep.model.MetodoPago"%>
 <%@ page import="aledep.model.Producto"%>
-<%@ page import="aledep.dto.VentaDTO"%>
-<%@ page import="aledep.dto.VentaDetalleDTO"%>
+<%@ page import="aledep.dto.CompraDTO"%>
+<%@ page import="aledep.dto.CompraDetalleDTO"%>
 <%@ include file="components/header.jsp"%>
 <%@ include file="components/titleheader.jsp"%>
 <%@ include file="components/modulos_sidebar.jsp"%>
@@ -17,28 +17,29 @@
 		style="display: none;"></div>
 	<div id="errorMessage" class="alert alert-danger"
 		style="display: none;"></div>
-	<!-- Ventas Registradas -->
+	<!-- Compras Registradas -->
 	<div class="card shadow mb-4">
 		<div
 			class="card-header py-3 d-flex justify-content-between align-items-center">
-			<h6 class="m-0 font-weight-bold text-primary">Ventas Registradas</h6>
+			<h6 class="m-0 font-weight-bold text-primary">Compras
+				Registradas</h6>
 		</div>
 		<div class="card-body">
 			<div style="float: right" class="mb-3">
 				<a href="#" class="btn btn-primary btn-circle mr-2"
-					id="btnRegistrarVenta" data-toggle="modal"
-					data-target="#registrarVentaModal"> <i class="fas fa-plus"></i>
+					id="btnRegistrarCompra" data-toggle="modal"
+					data-target="#registrarCompraModal"> <i class="fas fa-plus"></i>
 				</a> <a href="#" class="btn btn-warning btn-circle mr-2"
-					id="btnEditarVenta"> <i class="fas fa-edit"></i>
+					id="btnEditarCompra"> <i class="fas fa-edit"></i>
 				</a> 
 			</div>
 			<div class="table-responsive">
-				<table class="table table-bordered" id="dataTableVentas">
+				<table class="table table-bordered" id="dataTableCompras">
 					<thead>
 						<tr>
-							<th>N° Venta</th>
+							<th>N° Compra</th>
 							<th>Fecha de Creación</th>
-							<th>Cliente</th>
+							<th>Proveedor</th>
 							<th>Usuario</th>
 							<th>Método de Pago</th>
 							<th>Precio Total</th>
@@ -47,24 +48,25 @@
 					</thead>
 					<tbody>
 						<%
-						List<VentaDTO> listaVentasDTO = (List<VentaDTO>) request.getSession().getAttribute("listaVentasDTO");
-						if (listaVentasDTO != null && !listaVentasDTO.isEmpty()) {
-							for (VentaDTO ventaDTO : listaVentasDTO) {
+						List<CompraDTO> listaComprasDTO = (List<CompraDTO>) request.getSession().getAttribute("listaComprasDTO");
+						if (listaComprasDTO != null && !listaComprasDTO.isEmpty()) {
+							for (CompraDTO compraDTO : listaComprasDTO) {
 						%>
-						<tr data-id="<%=ventaDTO.getIdVenta()%>">
-							<td><%=ventaDTO.getIdVenta()%></td>
-							<td><%=ventaDTO.getFechaCreacionStr()%></td>
-							<td><%=ventaDTO.getCliente()%></td>
-							<td><%=ventaDTO.getUsuario()%></td>
-							<td><%=ventaDTO.getMetodoPago()%></td>
+						<tr data-id="<%=compraDTO.getIdCompra()%>">
+							<td><%=compraDTO.getIdCompra()%></td>
+							<td><%=compraDTO.getFechaCreacionStr()%></td>
+							<td><%=compraDTO.getProveedor()%></td>
+							<td><%=compraDTO.getUsuario()%></td>
+							<td><%=compraDTO.getMetodoPago()%></td>
+							<td>$ <%=String.format("%.2f", compraDTO.getPrecioTotal().doubleValue())%></td>
 
-							<td>$ <%=String.format("%.2f", ventaDTO.getPrecioTotal())%></td>
 							<td>
 								<ul>
 									<%
-									for (VentaDetalleDTO detalleDTO : ventaDTO.getDetalles()) {
+									for (CompraDetalleDTO detalleDTO : compraDTO.getDetalles()) {
 									%>
-									<li><%=detalleDTO.getProducto()%> - Cantidad: <%=detalleDTO.getCantidad()%></li>
+									<li><%=detalleDTO.getProducto()%> - Cantidad: <%=detalleDTO.getCantidad()%>
+									</li>
 									<%
 									}
 									%>
@@ -76,7 +78,7 @@
 						} else {
 						%>
 						<tr>
-							<td colspan="6">No hay ventas registradas</td>
+							<td colspan="7">No hay compras registradas</td>
 						</tr>
 						<%
 						}
@@ -86,39 +88,41 @@
 			</div>
 		</div>
 	</div>
-	<!-- Modal para Registrar/Editar Venta -->
-	<div class="modal fade" id="registrarVentaModal" role="dialog"
-		aria-labelledby="registrarVentaModalLabel" aria-hidden="true">
+	<!-- Modal para Registrar/Editar Compra -->
+	<div class="modal fade" id="registrarCompraModal" role="dialog"
+		aria-labelledby="registrarCompraModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="registrarVentaModalLabel">Registrar
-						Nueva Venta</h5>
+					<h5 class="modal-title" id="registrarCompraModalLabel">Registrar
+						Nueva Compra</h5>
 					<button type="button" class="close" data-dismiss="modal"
 						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
-				<form id="formRegistrarVenta">
+				<form id="formRegistrarCompra">
 					<div class="modal-body">
 						<div class="row">
-							<!-- Columna izquierda: Cliente, Usuario, Fecha de Creación -->
+							<!-- Columna izquierda: Proveedor, Usuario, Fecha de Creación -->
 							<div class="col-md-6">
 								<div class="form-group">
 									<label for="codigo">Código</label> <input type="text"
-										class="form-control" id="ventaId" name="ventaId" readonly>
+										class="form-control" id="compraId" name="compraId" readonly>
 								</div>
 								<div class="form-group">
-									<label for="clienteId" class="required">Cliente</label> <select
-										class="form-control select2" id="clienteId" name="clienteId"
-										required>
-										<option value="">Seleccionar Cliente</option>
+									<label for="proveedorId" class="required">Proveedor</label> <select
+										class="form-control select2" id="proveedorId"
+										name="proveedorId" required>
+										<option value="">Seleccionar Proveedor</option>
 										<%
-										List<Cliente> clientes = (List<Cliente>) request.getSession().getAttribute("listaClientes");
-										if (clientes != null) {
-											for (Cliente cliente : clientes) {
+										List<Proveedor> proveedores = (List<Proveedor>) request.getSession().getAttribute("listaProveedores");
+										if (proveedores != null) {
+											for (Proveedor proveedor : proveedores) {
 										%>
-										<option value="<%=cliente.getIdCliente()%>"><%=cliente.getNombre()%></option>
+										<option value="<%=proveedor.getIdProveedor()%>">
+											<%=proveedor.getNombre()%>
+										</option>
 										<%
 										}
 										}
@@ -135,7 +139,9 @@
 										if (usuarios != null) {
 											for (Usuario usuario : usuarios) {
 										%>
-										<option value="<%=usuario.getIdUsuario()%>"><%=usuario.getNombre()%></option>
+										<option value="<%=usuario.getIdUsuario()%>">
+											<%=usuario.getNombre()%>
+										</option>
 										<%
 										}
 										}
@@ -160,7 +166,9 @@
 										if (metodosPago != null) {
 											for (MetodoPago metodoPago : metodosPago) {
 										%>
-										<option value="<%=metodoPago.getIdMetPago()%>"><%=metodoPago.getNombre()%></option>
+										<option value="<%=metodoPago.getIdMetPago()%>">
+											<%=metodoPago.getNombre()%>
+										</option>
 										<%
 										}
 										}
@@ -179,7 +187,7 @@
 						<!-- Tabla de productos -->
 						<h5>Productos</h5>
 						<div class="table-responsive">
-							<table class="table table-bordered" id="productsTable">
+							<table class="table table-bordered" id="productsBuyTable">
 								<thead>
 									<tr>
 										<th>Producto</th>
@@ -189,7 +197,7 @@
 										<th>Acciones</th>
 									</tr>
 								</thead>
-								<tbody id="productsContainer">
+								<tbody id="productsBuyContainer">
 									<!-- Aquí se agregarán las filas de productos -->
 								</tbody>
 							</table>
@@ -202,7 +210,7 @@
 						<button type="button" class="btn btn-secondary"
 							data-dismiss="modal">Cancelar</button>
 						<button type="submit" class="btn btn-primary">Guardar
-							Venta</button>
+							Compra</button>
 					</div>
 				</form>
 			</div>
@@ -212,16 +220,16 @@
 	<script>
     $(document).ready(function() {
 
-    	$('#dataTableVentas').DataTable({
-            "order": [[0, "desc"]]  // Ordena por la primera columna de forma descendente
-        });
+    	$('#dataTableCompras').DataTable({
+    	    "order": [[0, "desc"]],
+    	});
 
-    	
-    	$('.select2').select2({
+        // Inicializar select2 para los selects
+        $('.select2').select2({
             width: '100%',
             placeholder: "Seleccionar una opción",
             allowClear: true,
-            dropdownParent: $('#registrarVentaModal')
+            dropdownParent: $('#registrarCompraModal')
         });
         
         $('.select2').on('select2:open', function(e) {
@@ -231,47 +239,46 @@
         });
 
         let selectedId = null;
-        let preciosUnitarios = []; // Array para almacenar precios unitarios de cada producto
 
-        // Seleccionar fila de la tabla
-        $('#dataTableVentas tbody').on('click', 'tr', function() {
-            $('#dataTableVentas tbody tr').removeClass('selected');
+        // Manejar selección de filas en la tabla
+        $('#dataTableCompras tbody').on('click', 'tr', function() {
+            $('#dataTableCompras tbody tr').removeClass('selected');
             $(this).addClass('selected');
             selectedId = $(this).data('id');
         });
 
-        // Doble click para editar la venta
-        $('#dataTableVentas tbody').on('dblclick', 'tr', function() {
-            $('#btnEditarVenta').trigger('click');
+        // Doble click para editar la compra
+        $('#dataTableCompras tbody').on('dblclick', 'tr', function() {
+            $('#btnEditarCompra').trigger('click');
         });
-
-        // Botón para abrir el modal de Registrar Venta
-        $('#btnRegistrarVenta').on('click', function() {
+        
+        // Abrir modal para registrar nueva compra
+        $('#btnRegistrarCompra').on('click', function() {
             selectedId = null;
-            $('#formRegistrarVenta')[0].reset();
+            $('#formRegistrarCompra')[0].reset();
             $('.select2').val(null).trigger('change');
-            $('#productsContainer').empty();
-            $('#registrarVentaModalLabel').text('Registrar Nueva Venta');
-            $('#registrarVentaModal').modal('show');
+            $('#productsBuyContainer').empty();
+            $('#registrarCompraModalLabel').text('Registrar Nueva Compra');
+            $('#registrarCompraModal').modal('show');
         });
 
-        // Botón para abrir el modal de Editar Venta
-        $('#btnEditarVenta').on('click', function() {
+        // Abrir modal para editar compra
+        $('#btnEditarCompra').on('click', function() {
             if (selectedId) {
                 $.ajax({
-                    url: 'editarVenta',
+                    url: 'editarCompra',
                     type: 'GET',
                     data: { id: selectedId },
                     success: function(data) {
-                        llenarFormularioVenta(data);
-                        $('#registrarVentaModalLabel').text('Editar Venta');
-                        $('#registrarVentaModal').modal('show');
+                        llenarFormularioCompra(data);
+                        $('#registrarCompraModalLabel').text('Editar Compra');
+                        $('#registrarCompraModal').modal('show');
                     },
                     error: function() {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'No se pudo cargar la información de la venta.'
+                            text: 'No se pudo cargar la información de la compra.'
                         });
                     }
                 });
@@ -279,13 +286,13 @@
                 Swal.fire({
                     icon: 'warning',
                     title: 'Advertencia',
-                    text: 'Por favor, selecciona una venta primero.'
+                    text: 'Por favor, selecciona una compra primero.'
                 });
             }
         });
 
-        // Botón para eliminar una venta
-        $('#btnEliminarVenta').on('click', function() {
+        // Eliminar compra
+        $('#btnAnularCompra').on('click', function() {
             if (selectedId) {
                 Swal.fire({
                     title: '¿Estás seguro?',
@@ -298,14 +305,14 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: 'eliminarVenta',
+                            url: 'eliminarCompra',
                             type: 'POST',
                             data: { id: selectedId },
                             success: function() {
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Eliminado',
-                                    text: 'La venta ha sido eliminada.'
+                                    text: 'La compra ha sido eliminada.'
                                 }).then(() => {
                                     location.reload();
                                 });
@@ -314,7 +321,7 @@
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: 'Hubo un problema al eliminar la venta.'
+                                    text: 'Hubo un problema al eliminar la compra.'
                                 });
                             }
                         });
@@ -324,15 +331,15 @@
                 Swal.fire({
                     icon: 'warning',
                     title: 'Advertencia',
-                    text: 'Por favor, selecciona una venta primero.'
+                    text: 'Por favor, selecciona una compra primero.'
                 });
             }
         });
 
-        // Enviar formulario mediante AJAX para registrar o editar
-        $('#formRegistrarVenta').on('submit', function(event) {
+        // Enviar formulario para registrar o editar compra
+        $('#formRegistrarCompra').on('submit', function(event) {
             event.preventDefault();
-            let url = selectedId ? 'editarVenta' : 'registrarVenta';
+            let url = selectedId ? 'editarCompra' : 'registrarCompra';
 
             $.ajax({
                 url: url,
@@ -342,17 +349,17 @@
                     if (response.status === 'success') {
                         Swal.fire({
                             icon: 'success',
-                            title: 'Venta guardada con éxito',
+                            title: 'Compra guardada con éxito',
                             text: response.message
                         }).then(() => {
-                            $('#registrarVentaModal').modal('hide');
+                            $('#registrarCompraModal').modal('hide');
                             location.reload();
                         });
                     } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Hubo un problema al guardar la venta.'
+                            text: 'Hubo un problema al guardar la compra.'
                         });
                     }
                 },
@@ -367,52 +374,46 @@
             });
         });
 
-        // Agregar nueva fila para un producto
+        // Añadir fila para nuevo producto
         $('#addProductButton').on('click', function() {
-            addProductRow("", "", 1, 0, 0); // Añadir nueva fila en blanco
+            addProductRow("", "", 1, 0, 0);
         });
-
-        // Actualizar el total de la venta cuando cambian cantidad o precio unitario
-        $('#productsContainer').on('input', '.cantidad, .precio-unitario', function() {
+        
+        // Actualizar el total de la compra cuando cambian cantidad o precio unitario
+        $('#productsBuyContainer').on('input', '.cantidad, .precio-unitario', function() {
             $(this).data('manual', true); // Marcar que el precio ha sido modificado manualmente
-            actualizarTotalVenta();
+            actualizarTotalCompra();
         });
 
         // Limpiar modal al cerrarlo
-        $('#registrarVentaModal').on('hidden.bs.modal', function() {
-            $('#formRegistrarVenta')[0].reset();
-            $('#productsContainer').empty();
+        $('#registrarCompraModal').on('hidden.bs.modal', function() {
+            $('#formRegistrarCompra')[0].reset();
+            $('#productsBuyContainer').empty();
             $('#precioTotal').text("");
             $('#precioTotalInput').val(0);
             $('.select2').val(null).trigger('change');
         });
 
-        // Función para crear un select con productos y actualizar precio unitario
+        // Función para crear un select de productos
         function createSelectProduct(productId) {
-            var select = $('<select></select>').addClass('productselect form-control select2').attr('name', 'productoId[]').attr('required', true);
+            var select = $('<select></select>').addClass('productBuyselect form-control select2').attr('name', 'productoId[]').attr('required', true);
 
-            // Generar opciones desde el backend con productos y almacenar precios
             <%List<Producto> productos = (List<Producto>) request.getSession().getAttribute("listaProductos");
 if (productos != null) {
-	for (int i = 0; i < productos.size(); i++) {
-		Producto producto = productos.get(i);%>
-                    
-                    preciosUnitarios['<%=producto.getIdProducto()%>'] = <%=producto.getPrecioVenta()%>; // Guardar precio usando el ID del producto
-                    
-                    var option = $('<option></option>').val('<%=producto.getIdProducto()%>').text('<%=producto.getNombre()%>');
-                    if (productId == "<%=producto.getIdProducto()%>") {
-                        option.attr('selected', true);
-                    }
-                    select.append(option);
+	for (Producto producto : productos) {%>
+            var option = $('<option></option>').val('<%=producto.getIdProducto()%>').text('<%=producto.getNombre()%>');
+            if (productId == "<%=producto.getIdProducto()%>") {
+                option.attr('selected', true);
+            }
+            select.append(option);
             <%}
 }%>
 
-            // Convertir en select2 después de agregar las opciones
             select.select2({
                 width: '100%',
                 placeholder: "Seleccionar una opción"
             });
-
+            
             // Al cambiar producto, actualizar el precio unitario si no ha sido modificado manualmente
             select.on('change', function() {
                 var selectedProductId = $(this).val();  // Usamos el valor del select para obtener el producto seleccionado
@@ -424,88 +425,86 @@ if (productos != null) {
                 if (!precioUnitarioInput.data('manual') && precioUnitario !== undefined) {
                     precioUnitarioInput.val(precioUnitario.toFixed(2)); // Asignar precio
                 }
-                actualizarTotalVenta();
+                actualizarTotalCompra();
             });
 
             return select;
         }
 
-        // Función para añadir una fila con el producto
-        function addProductRow(idVentaDetalle, productoId, cantidad, precioUnitario, totalProducto) {
+        // Añadir una fila con un producto
+        function addProductRow(idCompraDetalle, productoId, cantidad, precioUnitario, totalProducto) {
             var row = $('<tr></tr>');
-
             var productCell = $('<td></td>').append(createSelectProduct(productoId));
             var cantidadInput = createInput("cantidad[]", cantidad, "number", false, ["cantidad"]);
-            var precioUnitarioInput = createInput("precioUnitario[]", precioUnitario.toFixed(2), "text", false, ["precio-unitario"]).data('manual', false); // Inicialmente no ha sido modificado manualmente
+            var precioUnitarioInput = createInput("precioUnitario[]", precioUnitario.toFixed(2), "text", false, ["precio-unitario"]);
             var totalProductoInput = createInput("totalProducto[]", totalProducto.toFixed(2), "text", true, ["total-producto"]);
             var eliminarButton = $('<button></button>').addClass("btn btn-danger mt-2").attr("type", "button").text("Eliminar");
 
             eliminarButton.on('click', function() {
                 row.remove();
-                actualizarTotalVenta();
+                actualizarTotalCompra();
             });
 
             row.append(productCell)
-               .append($('<td></td>').append(cantidadInput))
-               .append($('<td></td>').append(precioUnitarioInput))
-               .append($('<td></td>').append(totalProductoInput))
-               .append($('<td></td>').append(eliminarButton));
+                .append($('<td></td>').append(cantidadInput))
+                .append($('<td></td>').append(precioUnitarioInput))
+                .append($('<td></td>').append(totalProductoInput))
+                .append($('<td></td>').append(eliminarButton));
 
-            $('#productsContainer').append(row);
+            $('#productsBuyContainer').append(row);
 
-            // Inicializamos el select2 después de agregar la fila
-            $('.productselect').select2({
+            $('.productBuyselect').select2({
                 width: '100%',
                 placeholder: "Seleccionar una opción"
             });
         }
 
-        // Función para actualizar el total de la venta
-        function actualizarTotalVenta() {
-            let totalVenta = 0;
+        // Actualizar el total de la compra
+        function actualizarTotalCompra() {
+            let totalCompra = 0;
 
-            $('#productsContainer tr').each(function() {
+            $('#productsBuyContainer tr').each(function() {
                 const cantidad = parseFloat($(this).find('.cantidad').val()) || 0;
                 const precioUnitario = parseFloat($(this).find('.precio-unitario').val()) || 0;
                 const totalProducto = cantidad * precioUnitario;
 
                 $(this).find('.total-producto').val(totalProducto.toFixed(2));
-                totalVenta += totalProducto;
+                totalCompra += totalProducto;
             });
 
-            $('#precioTotal').text(totalVenta.toFixed(2));
-            $('#precioTotalInput').val(totalVenta.toFixed(2));
+            $('#precioTotal').text(totalCompra.toFixed(2));
+            $('#precioTotalInput').val(totalCompra.toFixed(2));
         }
 
-        // Función para llenar el formulario con los datos de una venta
-        function llenarFormularioVenta(data) {
-            $('#ventaId').val(data.idVenta).trigger('change');
-            $('#clienteId').val(data.idCliente).trigger('change');
+        // Llenar formulario de compra
+        function llenarFormularioCompra(data) {
+            $('#compraId').val(data.idCompra).trigger('change');
+            $('#proveedorId').val(data.idProveedor).trigger('change');
             $('#usuarioId').val(data.idUsuario).trigger('change');
             $('#metodoPagoId').val(data.idMetodoPago).trigger('change');
 
             if (data.fechaCreacionStr) {
-            	 const partesFecha = data.fechaCreacionStr.split('/');
-                 const dia = partesFecha[0];
-                 const mes = partesFecha[1];
-                 const anio = partesFecha[2];
-                 const fechaFormateada = anio + '-' + mes + '-' + dia;
+                const partesFecha = data.fechaCreacionStr.split('/');
+                const dia = partesFecha[0];
+                const mes = partesFecha[1];
+                const anio = partesFecha[2];
+                const fechaFormateada = anio + '-' + mes + '-' + dia;
                 $('#fechaCreacion').val(fechaFormateada);
             } else {
                 $('#fechaCreacion').val('');
             }
 
-            $('#productsContainer').empty();
+            $('#productsBuyContainer').empty();
 
             data.detalles.forEach(function(detalle) {
-                addProductRow(detalle.idVentaDetalle, detalle.idProducto, detalle.cantidad, detalle.precioUnitario, detalle.cantidad * detalle.precioUnitario);
+                addProductRow(detalle.idCompraDetalle, detalle.idProducto, detalle.cantidad, detalle.precioUnitario, detalle.cantidad * detalle.precioUnitario);
             });
 
             $('#precioTotal').text(data.precioTotal.toFixed(2));
             $('#precioTotalInput').val(data.precioTotal.toFixed(2));
         }
 
-        // Función para crear inputs
+        // Crear inputs dinámicamente
         function createInput(name, value, type = "text", readonly = false, additionalClasses = []) {
             var input = $('<input></input>').addClass('form-control').attr('name', name).attr('type', type).val(value);
             if (readonly) {
@@ -515,8 +514,5 @@ if (productos != null) {
             return input;
         }
     });
-</script>
-
-
-
+    </script>
 </div>

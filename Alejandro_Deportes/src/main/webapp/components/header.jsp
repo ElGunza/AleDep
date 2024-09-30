@@ -31,8 +31,17 @@
 
 <link href="css/aledep.css" rel="stylesheet" type="text/css">
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/css/select2.min.css" rel="stylesheet"/>
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/css/select2.min.css"
+	rel="stylesheet" />
 
 <script src="js/plugins.js"></script>
 
 </head>
+
+
+<%
+String rolUsuario = (String) session.getAttribute("rolUsuario");
+boolean esAdministrador = "Administrador".equals(rolUsuario); // Solo los administradores pueden editar
+boolean esEmpleado = "Empleado".equals(rolUsuario);
+%>

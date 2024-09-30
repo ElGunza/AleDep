@@ -2,6 +2,7 @@ package aledep.controller.usuario;
 
 import com.google.gson.Gson;
 import aledep.model.Usuario;
+import aledep.service.RolService;
 import aledep.service.UsuarioService;
 
 import javax.servlet.ServletException;
@@ -9,6 +10,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +22,15 @@ public class EditarUsuarioServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private final UsuarioService usuarioService = new UsuarioService();
-
+    private final RolService rolService = new RolService();
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
+        	
+        	cargarListaEnSesion(request.getSession());
+        	
             int usuarioId = Integer.parseInt(request.getParameter("id"));
             Usuario usuario = usuarioService.getUsuarioById(usuarioId);
 
@@ -75,4 +82,9 @@ public class EditarUsuarioServlet extends HttpServlet {
 
         return usuario;
     }
+    
+    private void cargarListaEnSesion(HttpSession session) {
+    	session.setAttribute("listaRoles", rolService.getActivosRoles());
+    }
+    
 }
