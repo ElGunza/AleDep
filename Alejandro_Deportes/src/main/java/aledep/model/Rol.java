@@ -1,14 +1,21 @@
 package aledep.model;
 
 import javax.persistence.*;
+
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "ROLES")
-public class Rol {
+public class Rol implements Serializable{
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_Rol")
     private Integer idRol;

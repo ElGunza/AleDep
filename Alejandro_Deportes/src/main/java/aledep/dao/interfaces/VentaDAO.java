@@ -1,6 +1,8 @@
 package aledep.dao.interfaces;
 
 import aledep.model.Venta;
+
+import java.util.Date;
 import java.util.List;
 
 public interface VentaDAO {
@@ -11,4 +13,7 @@ public interface VentaDAO {
     List<Venta> getAllVentas();
     Venta getVentaById(Integer id);
     List<Venta> getVentasActivas();
+    
+    List<Venta> obtenerReporteVentas(Date fechaInicio, Date fechaFin);
+    
 }

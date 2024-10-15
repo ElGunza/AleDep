@@ -15,10 +15,9 @@ public class VentaDTO {
     private String fechaCreacionStr; // Nuevo campo para manejar la fecha como String
     private Double precioTotal;
     private List<VentaDetalleDTO> detalles;
+    private List<Integer> idsVentas;
 
-    // Getters y Setters
-
-    public Integer getIdVenta() {
+	public Integer getIdVenta() {
         return idVenta;
     }
 
@@ -105,4 +104,31 @@ public class VentaDTO {
     public void setDetalles(List<VentaDetalleDTO> detalles) {
         this.detalles = detalles;
     }
+    
+    public VentaDTO() {}
+
+    public VentaDTO(String fechaCreacionStr, double precioTotal, List<VentaDetalleDTO> detalles) {
+        this.fechaCreacionStr = fechaCreacionStr;
+        this.precioTotal = precioTotal;
+        this.detalles = detalles;
+    }
+
+	public VentaDTO(String fechaCreacionStr, List<Integer> idsVentas, Double precioTotal) {
+		super();
+		this.fechaCreacionStr = fechaCreacionStr;
+		this.setIdsVentas(idsVentas);
+		this.precioTotal = precioTotal;
+	}
+
+
+	public List<Integer> getIdsVentas() {
+		return idsVentas;
+	}
+
+	public void setIdsVentas(List<Integer> idsVentas) {
+		this.idsVentas = idsVentas;
+	}
+    
+    
+    
 }

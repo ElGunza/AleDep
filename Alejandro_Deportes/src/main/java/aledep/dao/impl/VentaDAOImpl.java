@@ -7,6 +7,7 @@ import aledep.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import java.util.Date;
 import java.util.List;
 
 public class VentaDAOImpl implements VentaDAO {
@@ -146,4 +147,32 @@ public class VentaDAOImpl implements VentaDAO {
 			throw new RuntimeException("Error obteniendo ventas activas: " + e.getMessage(), e);
 		}
 	}
+
+	@Override
+	public List<Venta> obtenerReporteVentas(Date fechaInicio, Date fechaFin) {
+		Transaction transaction = null;
+		List<Venta> ventas = null;
+
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+			transaction = session.beginTransaction();
+
+			ventas = session
+					.createQuery("SELECT DISTINCT v FROM Venta v " + "JOIN FETCH v.cliente c "
+							+ "JOIN FETCH v.usuario u " + "JOIN FETCH v.metodoPago m " + "JOIN FETCH v.detalles d "
+							+ "JOIN FETCH d.producto p " + "WHERE v.fechaCreacion BETWEEN :fechaInicio AND :fechaFin",
+							Venta.class)
+					.setParameter("fechaInicio", fechaInicio).setParameter("fechaFin", fechaFin).list();
+
+			transaction.commit();
+		} catch (Exception e) {
+			if (transaction != null && transaction.isActive()) {
+				transaction.rollback();
+			}
+			e.printStackTrace();
+			throw new RuntimeException("Error obteniendo el reporte de ventas: " + e.getMessage(), e);
+		}
+
+		return ventas;
+	}
+
 }

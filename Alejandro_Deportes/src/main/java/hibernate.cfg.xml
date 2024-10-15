@@ -32,6 +32,8 @@
         <mapping class="aledep.model.Compra"/>
         <mapping class="aledep.model.CompraDetalle"/>
         <mapping class="aledep.model.Permiso"/>
+        <mapping class="aledep.model.Empresa"/>
+
 
 	</session-factory>
 </hibernate-configuration>

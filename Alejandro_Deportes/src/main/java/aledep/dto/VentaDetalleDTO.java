@@ -9,7 +9,24 @@ public class VentaDetalleDTO {
 
     // Getters y Setters
 
-    public Integer getIdVentaDetalle() {
+  
+
+	public VentaDetalleDTO(String producto, Float cantidad, Double precioUnitario) {
+		super();
+		this.producto = producto;
+		this.cantidad = cantidad;
+		this.precioUnitario = precioUnitario;
+	}
+
+
+
+	public VentaDetalleDTO() {
+		super();
+	}
+
+
+
+	public Integer getIdVentaDetalle() {
         return idVentaDetalle;
     }
 
@@ -48,4 +65,6 @@ public class VentaDetalleDTO {
     public void setPrecioUnitario(Double precioUnitario) {
         this.precioUnitario = precioUnitario;
     }
+    
+    
 }

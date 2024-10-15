@@ -31,7 +31,7 @@
 					data-target="#registrarCompraModal"> <i class="fas fa-plus"></i>
 				</a> <a href="#" class="btn btn-warning btn-circle mr-2"
 					id="btnEditarCompra"> <i class="fas fa-edit"></i>
-				</a> 
+				</a>
 			</div>
 			<div class="table-responsive">
 				<table class="table table-bordered" id="dataTableCompras">
@@ -239,6 +239,8 @@
         });
 
         let selectedId = null;
+        let preciosUnitarios = []; // Array para almacenar precios unitarios de cada producto
+
 
         // Manejar selección de filas en la tabla
         $('#dataTableCompras tbody').on('click', 'tr', function() {
@@ -416,6 +418,9 @@ if (productos != null) {
             
             // Al cambiar producto, actualizar el precio unitario si no ha sido modificado manualmente
             select.on('change', function() {
+            	
+            	debugger;
+            		
                 var selectedProductId = $(this).val();  // Usamos el valor del select para obtener el producto seleccionado
                 var precioUnitario = preciosUnitarios[selectedProductId]; // Obtener precio desde el array usando el ID
 
