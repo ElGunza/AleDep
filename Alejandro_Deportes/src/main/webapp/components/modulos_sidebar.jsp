@@ -42,7 +42,7 @@
 			<form action="ventas" method="get">
 				<a class="collapse-item" href="ventas">Ventas</a>
 			</form>
-<!-- 			<a class="collapse-item" href="devoluciones_out.jsp">Devoluciones</a> -->
+			<!-- 			<a class="collapse-item" href="devoluciones_out.jsp">Devoluciones</a> -->
 		</div>
 	</div></li>
 
@@ -59,7 +59,7 @@
 			<form action="clientes" method="get">
 				<a class="collapse-item" href="clientes">Clientes</a>
 			</form>
-<!-- 			<a class="collapse-item" href="historial_clientes.jsp">Historial</a>
+			<!-- 			<a class="collapse-item" href="historial_clientes.jsp">Historial</a>
 			<a class="collapse-item" href="deudas_cobros.jsp">Deudas y Cobros</a> -->
 		</div>
 	</div></li>
@@ -78,7 +78,7 @@
 			<form action="compras" method="get">
 				<a class="collapse-item" href="compras">Compras</a>
 			</form>
-<!-- 			<a class="collapse-item" href="seg_envios.jsp">Seguimiento de
+			<!-- 			<a class="collapse-item" href="seg_envios.jsp">Seguimiento de
 				Envíos</a> -->
 		</div>
 	</div></li>
@@ -95,8 +95,9 @@
 			<form action="proveedores" method="get">
 				<a class="collapse-item" href="proveedores">Proveedores</a>
 			</form>
-<!-- 			<a class="collapse-item" href="historial_proveedores.jsp">Historial</a>
- -->		</div>
+			<!-- 			<a class="collapse-item" href="historial_proveedores.jsp">Historial</a>
+ -->
+		</div>
 	</div></li>
 
 <!-- CONTABILIDAD -->
@@ -126,16 +127,17 @@
 		aria-labelledby="headingReports" data-parent="#accordionSidebar">
 		<div class="bg-white py-2 collapse-inner rounded">
 			<h6 class="collapse-header">Generación de Reportes:</h6>
-			
-			
+
+
 			<form action="reporteVentas" method="get">
-			<a class="collapse-item" href="reporteVentas">Reporte de
-				Ventas</a> 
-				</form>
-				
-				<a class="collapse-item"
-				href="reporte_ranking_vendedores.jsp">Ranking de Vendedores</a> <a
-				class="collapse-item" href="reporte_ranking_clientes.jsp">Ranking
+				<a class="collapse-item" href="reporteVentas">Reporte de Ventas</a>
+			</form>
+			<form action="rankingVendedores" method="get">
+				<a class="collapse-item" href="rankingVendedores">Ranking
+					de Vendedores</a>
+			</form>
+
+			<a class="collapse-item" href="reporte_ranking_clientes.jsp">Ranking
 				de Clientes</a> <a class="collapse-item"
 				href="reporte_ranking_productos.jsp">Ranking de Productos</a> <a
 				class="collapse-item" href="reporte_medios_pago.jsp">Medios de
