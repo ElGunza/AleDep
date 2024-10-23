@@ -2,9 +2,15 @@ package aledep.service;
 
 import aledep.dao.interfaces.VentaDAO;
 import aledep.dao.impl.VentaDAOImpl;
+import aledep.dto.ClienteRankingDTO;
+import aledep.dto.MetodoPagoDTO;
+import aledep.dto.ProductoVentaDTO;
 import aledep.dto.UsuarioDTO;
 import aledep.dto.VentaDTO;
 import aledep.dto.VentaDetalleDTO;
+import aledep.model.Cliente;
+import aledep.model.MetodoPago;
+import aledep.model.Producto;
 import aledep.model.Venta;
 import aledep.model.VentaDetalle;
 import java.text.SimpleDateFormat;
@@ -60,107 +66,7 @@ public class VentaService {
 		return venta;
 	}
 
-	public List<VentaDTO> obtenerVentasPorPeriodo(LocalDate fechaInicio, LocalDate fechaFin, String periodo) {
-		Date fechaInicioDate = Date.from(fechaInicio.atStartOfDay(ZoneId.systemDefault()).toInstant());
-		Date fechaFinDate = Date.from(fechaFin.atStartOfDay(ZoneId.systemDefault()).toInstant());
-		List<Venta> ventas = ventaDAO.obtenerReporteVentas(fechaInicioDate, fechaFinDate);
-		if (ventas == null || ventas.isEmpty()) {
-			return new ArrayList<>();
-		}
-		return agruparVentas(ventas, periodo);
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<VentaDTO> agruparVentas(List<Venta> ventas, String periodo) {
-		Map<String, List<Object>> ventasAgrupadas = new LinkedHashMap<>();
-
-		DateTimeFormatter diarioFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		DateTimeFormatter mensualFormatter = DateTimeFormatter.ofPattern("MM/yyyy");
-		DateTimeFormatter anualFormatter = DateTimeFormatter.ofPattern("yyyy");
-		ventas.sort(Comparator.comparing(Venta::getFechaCreacion));
-
-		for (Venta venta : ventas) {
-			try {
-				if (venta.getFechaCreacion() instanceof java.sql.Date) {
-					java.sql.Date fechaSql = (java.sql.Date) venta.getFechaCreacion();
-					LocalDate fechaVenta = fechaSql.toLocalDate();
-					String claveAgrupada = obtenerClaveAgrupada(fechaVenta, periodo, diarioFormatter, mensualFormatter,
-							anualFormatter);
-					ventasAgrupadas.putIfAbsent(claveAgrupada,
-							new ArrayList<>(Arrays.asList(0.0, new ArrayList<Integer>())));
-					Double precioTotal = (Double) ventasAgrupadas.get(claveAgrupada).get(0) + venta.getPrecioTotal();
-					List<Integer> idsVentas = (List<Integer>) ventasAgrupadas.get(claveAgrupada).get(1);
-
-					ventasAgrupadas.get(claveAgrupada).set(0, precioTotal);
-					idsVentas.add(venta.getIdVenta());
-
-				} else {
-					System.out.println("La venta con ID: " + venta.getIdVenta() + " tiene una fecha incompatible.");
-				}
-			} catch (Exception e) {
-				System.out.println("Error procesando la venta con ID: " + venta.getIdVenta());
-				e.printStackTrace();
-			}
-		}
-
-		return ventasAgrupadas.entrySet().stream().map(entry -> new VentaDTO(entry.getKey(),
-				(List<Integer>) entry.getValue().get(1), (Double) entry.getValue().get(0)))
-				.collect(Collectors.toList());
-	}
-
-	private String obtenerClaveAgrupada(LocalDate fechaVenta, String periodo, DateTimeFormatter diarioFormatter,
-			DateTimeFormatter mensualFormatter, DateTimeFormatter anualFormatter) {
-		String clave = "";
-		switch (periodo.toLowerCase()) {
-		case "mensual":
-			clave = fechaVenta.format(mensualFormatter);
-			break;
-		case "anual":
-			clave = fechaVenta.format(anualFormatter);
-			break;
-		case "semanal":
-			// Obtener la semana del año y el año de la venta para agrupar
-			int semanaDelAno = fechaVenta.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-			int ano = fechaVenta.getYear();
-			clave = "Semana " + semanaDelAno + " del " + ano;
-			break;
-
-		default:
-			clave = fechaVenta.format(diarioFormatter);
-			break;
-		}
-		return clave;
-	}
-
-	public List<UsuarioDTO> obtenerRankingVendedores(LocalDate fechaInicio, LocalDate fechaFin, String periodo) {
-		Date fechaInicioDate = Date.from(fechaInicio.atStartOfDay(ZoneId.systemDefault()).toInstant());
-		Date fechaFinDate = Date.from(fechaFin.atStartOfDay(ZoneId.systemDefault()).toInstant());
-
-		List<Venta> ventas = ventaDAO.obtenerReporteVentas(fechaInicioDate, fechaFinDate);
-
-		if (ventas == null || ventas.isEmpty()) {
-			return new ArrayList<>();
-		}
-
-		Map<String, UsuarioDTO> ranking = new LinkedHashMap<>();
-		for (Venta venta : ventas) {
-			if (venta.getUsuario() != null) {
-				String nombreVendedor = venta.getUsuario().getNombre();
-				Integer idVendedor = venta.getUsuario().getIdUsuario();
-
-				UsuarioDTO vendedor = ranking.getOrDefault(nombreVendedor, new UsuarioDTO());
-				vendedor.setIdUsuario(idVendedor);
-				vendedor.setNombre(nombreVendedor);
-
-				vendedor.incrementarVentas(venta.getPrecioTotal());
-				ranking.put(nombreVendedor, vendedor);
-			}
-		}
-
-		return ranking.values().stream().sorted(Comparator.comparingDouble(UsuarioDTO::getTotalVentas).reversed())
-				.collect(Collectors.toList());
-	}
-
+	// Método para convertir una venta a VentaDTO
 	public VentaDTO convertirAVentaDTO(Venta venta) {
 		VentaDTO dto = new VentaDTO();
 		dto.setIdVenta(venta.getIdVenta());
@@ -217,6 +123,214 @@ public class VentaService {
 		dto.setDetalles(detallesDTO);
 
 		return dto;
+	}
+
+	// Método para obtener ventas por período
+	public List<VentaDTO> obtenerVentasPorPeriodo(LocalDate fechaInicio, LocalDate fechaFin, String periodo) {
+		Date fechaInicioDate = Date.from(fechaInicio.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date fechaFinDate = Date.from(fechaFin.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		List<Venta> ventas = ventaDAO.obtenerReporteVentas(fechaInicioDate, fechaFinDate);
+		if (ventas == null || ventas.isEmpty()) {
+			return new ArrayList<>();
+		}
+		return agruparVentas(ventas, periodo);
+	}
+
+	// Agrupar ventas por período (diario, semanal, mensual, anual)
+	@SuppressWarnings("unchecked")
+	private List<VentaDTO> agruparVentas(List<Venta> ventas, String periodo) {
+		Map<String, List<Object>> ventasAgrupadas = new LinkedHashMap<>();
+
+		DateTimeFormatter diarioFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		DateTimeFormatter mensualFormatter = DateTimeFormatter.ofPattern("MM/yyyy");
+		DateTimeFormatter anualFormatter = DateTimeFormatter.ofPattern("yyyy");
+		ventas.sort(Comparator.comparing(Venta::getFechaCreacion));
+
+		for (Venta venta : ventas) {
+			try {
+				if (venta.getFechaCreacion() instanceof java.sql.Date) {
+					java.sql.Date fechaSql = (java.sql.Date) venta.getFechaCreacion();
+					LocalDate fechaVenta = fechaSql.toLocalDate();
+					String claveAgrupada = obtenerClaveAgrupada(fechaVenta, periodo, diarioFormatter, mensualFormatter,
+							anualFormatter);
+					ventasAgrupadas.putIfAbsent(claveAgrupada,
+							new ArrayList<>(Arrays.asList(0.0, new ArrayList<Integer>())));
+					Double precioTotal = (Double) ventasAgrupadas.get(claveAgrupada).get(0) + venta.getPrecioTotal();
+					List<Integer> idsVentas = (List<Integer>) ventasAgrupadas.get(claveAgrupada).get(1);
+
+					ventasAgrupadas.get(claveAgrupada).set(0, precioTotal);
+					idsVentas.add(venta.getIdVenta());
+
+				} else {
+					System.out.println("La venta con ID: " + venta.getIdVenta() + " tiene una fecha incompatible.");
+				}
+			} catch (Exception e) {
+				System.out.println("Error procesando la venta con ID: " + venta.getIdVenta());
+				e.printStackTrace();
+			}
+		}
+
+		return ventasAgrupadas.entrySet().stream().map(entry -> new VentaDTO(entry.getKey(),
+				(List<Integer>) entry.getValue().get(1), (Double) entry.getValue().get(0)))
+				.collect(Collectors.toList());
+	}
+
+	private String obtenerClaveAgrupada(LocalDate fechaVenta, String periodo, DateTimeFormatter diarioFormatter,
+			DateTimeFormatter mensualFormatter, DateTimeFormatter anualFormatter) {
+		String clave = "";
+		switch (periodo.toLowerCase()) {
+		case "mensual":
+			clave = fechaVenta.format(mensualFormatter);
+			break;
+		case "anual":
+			clave = fechaVenta.format(anualFormatter);
+			break;
+		case "semanal":
+			int semanaDelAno = fechaVenta.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+			int ano = fechaVenta.getYear();
+			clave = "Semana " + semanaDelAno + " del " + ano;
+			break;
+
+		default:
+			clave = fechaVenta.format(diarioFormatter);
+			break;
+		}
+		return clave;
+	}
+
+	public List<UsuarioDTO> obtenerRankingVendedores(LocalDate fechaInicio, LocalDate fechaFin, String periodo) {
+		Date fechaInicioDate = Date.from(fechaInicio.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date fechaFinDate = Date.from(fechaFin.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+		List<Venta> ventas = ventaDAO.obtenerReporteVentas(fechaInicioDate, fechaFinDate);
+
+		if (ventas == null || ventas.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		Map<String, UsuarioDTO> ranking = new LinkedHashMap<>();
+		for (Venta venta : ventas) {
+			if (venta.getUsuario() != null) {
+				String nombreVendedor = venta.getUsuario().getNombre();
+				Integer idVendedor = venta.getUsuario().getIdUsuario();
+
+				String claveAgrupada = idVendedor + "-"
+						+ obtenerClaveAgrupada(((java.sql.Date) venta.getFechaCreacion()).toLocalDate(), periodo,
+								DateTimeFormatter.ofPattern("dd/MM/yyyy"), DateTimeFormatter.ofPattern("MM/yyyy"),
+								DateTimeFormatter.ofPattern("yyyy"));
+
+				UsuarioDTO vendedor = ranking.getOrDefault(claveAgrupada, new UsuarioDTO());
+				vendedor.setIdUsuario(idVendedor);
+				vendedor.setNombre(nombreVendedor);
+
+				vendedor.incrementarVentas(venta.getPrecioTotal());
+				ranking.put(claveAgrupada, vendedor);
+			}
+		}
+
+		// Ordenar por ventas
+		return ranking.values().stream().sorted(Comparator.comparingDouble(UsuarioDTO::getTotalVentas).reversed())
+				.collect(Collectors.toList());
+	}
+
+	// Ranking de Productos Vendidos agrupado por período
+	public List<ProductoVentaDTO> obtenerRankingProductosVendidosPorPeriodo(LocalDate fechaInicio, LocalDate fechaFin,
+			String periodo) {
+		Date fechaInicioDate = Date.from(fechaInicio.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date fechaFinDate = Date.from(fechaFin.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+		List<Venta> ventas = ventaDAO.obtenerReporteVentas(fechaInicioDate, fechaFinDate);
+
+		// Cambiamos el tipo de clave a Integer, que será el ID único del producto
+		Map<Integer, ProductoVentaDTO> rankingProductos = new LinkedHashMap<>();
+
+		for (Venta venta : ventas) {
+			for (VentaDetalle detalle : venta.getDetalles()) {
+				Producto producto = detalle.getProducto();
+
+				if (producto == null) {
+					continue; // Si el producto es nulo, se omite
+				}
+
+				// Usamos el ID del producto como clave de agrupación
+				ProductoVentaDTO productoDTO = rankingProductos.getOrDefault(producto.getIdProducto(),
+						new ProductoVentaDTO());
+				productoDTO.setNombreProducto(producto.getNombre());
+
+				// Acumular la cantidad vendida
+				productoDTO.setCantidadVendida(productoDTO.getCantidadVendida() == null ? detalle.getCantidad()
+						: productoDTO.getCantidadVendida() + detalle.getCantidad());
+
+				productoDTO.setPrecioVenta(producto.getPrecioVenta());
+				productoDTO.setStockActual(producto.getCantidad());
+
+				// Guardar o actualizar en el mapa
+				rankingProductos.put(producto.getIdProducto(), productoDTO);
+			}
+		}
+
+		// Devolver la lista ordenada por cantidad vendida
+		return rankingProductos.values().stream()
+				.sorted(Comparator.comparing(ProductoVentaDTO::getCantidadVendida).reversed())
+				.collect(Collectors.toList());
+	}
+
+	// Ranking de Clientes agrupado por período
+	public List<ClienteRankingDTO> obtenerRankingClientesPorPeriodo(LocalDate fechaInicio, LocalDate fechaFin,
+			String periodo) {
+		Date fechaInicioDate = Date.from(fechaInicio.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date fechaFinDate = Date.from(fechaFin.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+		List<Venta> ventas = ventaDAO.obtenerReporteVentas(fechaInicioDate, fechaFinDate);
+
+		// Cambiamos el tipo de clave a Integer, que será el ID único del cliente
+		Map<Integer, ClienteRankingDTO> rankingClientes = new LinkedHashMap<>();
+
+		for (Venta venta : ventas) {
+			Cliente cliente = venta.getCliente();
+			if (cliente == null) {
+				continue; // Si el cliente es nulo, se omite
+			}
+
+			// Usamos el ID del cliente como clave de agrupación
+			ClienteRankingDTO clienteDTO = rankingClientes.getOrDefault(cliente.getIdCliente(),
+					new ClienteRankingDTO());
+			clienteDTO.setNombreCliente(cliente.getNombre());
+			clienteDTO
+					.setCantidadVentas(clienteDTO.getCantidadVentas() == null ? 1 : clienteDTO.getCantidadVentas() + 1);
+			clienteDTO.setTotalVendido(clienteDTO.getTotalVendido() == null ? venta.getPrecioTotal()
+					: clienteDTO.getTotalVendido() + venta.getPrecioTotal());
+
+			rankingClientes.put(cliente.getIdCliente(), clienteDTO);
+		}
+
+		return rankingClientes.values().stream()
+				.sorted(Comparator.comparing(ClienteRankingDTO::getCantidadVentas).reversed())
+				.collect(Collectors.toList());
+	}
+
+	public List<MetodoPagoDTO> obtenerMetodosPagoUtilizados(LocalDate fechaInicio, LocalDate fechaFin) {
+		Date fechaInicioDate = Date.from(fechaInicio.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date fechaFinDate = Date.from(fechaFin.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+		List<Venta> ventas = ventaDAO.obtenerReporteVentas(fechaInicioDate, fechaFinDate);
+		Map<Integer, MetodoPagoDTO> rankingMetodosPago = new LinkedHashMap<>();
+
+		for (Venta venta : ventas) {
+			MetodoPago metodo = venta.getMetodoPago();
+			if (metodo == null) {
+				continue;
+			}
+
+			MetodoPagoDTO metodoDTO = rankingMetodosPago.getOrDefault(metodo.getIdMetPago(), new MetodoPagoDTO());
+			metodoDTO.setNombre(metodo.getNombre());
+			metodoDTO.setCantidadUsos(metodoDTO.getCantidadUsos() == null ? 1 : metodoDTO.getCantidadUsos() + 1);
+
+			rankingMetodosPago.put(metodo.getIdMetPago(), metodoDTO);
+		}
+
+		return rankingMetodosPago.values().stream()
+				.sorted(Comparator.comparing(MetodoPagoDTO::getCantidadUsos).reversed()).collect(Collectors.toList());
 	}
 
 }

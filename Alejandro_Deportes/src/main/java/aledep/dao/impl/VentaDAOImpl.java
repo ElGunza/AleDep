@@ -18,12 +18,10 @@ public class VentaDAOImpl implements VentaDAO {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();
 
-			// Guardar la venta
 			session.save(venta);
 
-			// Guardar los detalles
 			for (VentaDetalle detalle : venta.getDetalles()) {
-				detalle.setVenta(venta); // Establecer la relación correcta
+				detalle.setVenta(venta);
 				session.save(detalle);
 			}
 
@@ -44,14 +42,12 @@ public class VentaDAOImpl implements VentaDAO {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();
 
-			// 2. Eliminar los detalles antiguos que ya no están en la nueva lista
 			for (VentaDetalle detalleExistente : ventaExistente.getDetalles()) {
 				if (!ventaExistente.getDetalles().contains(detalleExistente)) {
 					session.delete(detalleExistente);
 				}
 			}
 
-			// 3. Actualizar o añadir los nuevos detalles
 			for (VentaDetalle nuevoDetalle : ventaExistente.getDetalles()) {
 				nuevoDetalle.setVenta(ventaExistente);
 				session.saveOrUpdate(nuevoDetalle);

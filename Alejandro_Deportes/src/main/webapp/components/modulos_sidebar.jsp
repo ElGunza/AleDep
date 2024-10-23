@@ -101,7 +101,7 @@
 	</div></li>
 
 <!-- CONTABILIDAD -->
-<li class="nav-item"><a class="nav-link collapsed" href="#"
+<!-- <li class="nav-item"><a class="nav-link collapsed" href="#"
 	data-toggle="collapse" data-target="#collapseAccount"
 	aria-expanded="true" aria-controls="collapseAccount"> <i
 		class="fas fa-solid fa-dollar-sign"></i> <span>Contabilidad</span>
@@ -115,7 +115,7 @@
 				Contables</a> <a class="collapse-item" href="impuestos.jsp">Impuestos</a>
 			<a class="collapse-item" href="auditoria.jsp">Auditoria</a>
 		</div>
-	</div></li>
+	</div></li> -->
 
 <!-- REPORTES -->
 <li class="nav-item"><a class="nav-link collapsed" href="#"
@@ -128,23 +128,29 @@
 		<div class="bg-white py-2 collapse-inner rounded">
 			<h6 class="collapse-header">Generación de Reportes:</h6>
 
-
 			<form action="reporteVentas" method="get">
 				<a class="collapse-item" href="reporteVentas">Reporte de Ventas</a>
 			</form>
 			<form action="rankingVendedores" method="get">
-				<a class="collapse-item" href="rankingVendedores">Ranking
-					de Vendedores</a>
+				<a class="collapse-item" href="rankingVendedores">Ranking de
+					Vendedores</a>
+			</form>
+			<form action="rankingClientes" method="get">
+				<a class="collapse-item" href="rankingClientes">Ranking de
+					Clientes</a>
+			</form>
+			<form action="reporteProductosVendidos" method="get">
+				<a class="collapse-item" href="reporteProductosVendidos">Ranking
+					de Productos</a>
 			</form>
 
-			<a class="collapse-item" href="reporte_ranking_clientes.jsp">Ranking
-				de Clientes</a> <a class="collapse-item"
-				href="reporte_ranking_productos.jsp">Ranking de Productos</a> <a
-				class="collapse-item" href="reporte_medios_pago.jsp">Medios de
-				Pago</a> <a class="collapse-item" href="reporte_estado_inventario.jsp">Estado
-				de Inventario</a> <a class="collapse-item"
-				href="reporte_cambios_devoluciones.jsp">Cambios y Devoluciones</a> <a
-				class="collapse-item" href="reporte_estado_ocupacion_depositos.jsp">Estado
+			<a class="collapse-item" href="reporte_estado_inventario.jsp">Estado
+				de Inventario</a>
+				
+			 <a class="collapse-item"
+				href="reporte_cambios_devoluciones.jsp">Cambios y Devoluciones</a>
+				
+			 <a class="collapse-item" href="reporte_estado_ocupacion_depositos.jsp">Estado
 				de Depósitos</a>
 		</div>
 	</div></li>

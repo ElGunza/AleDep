@@ -301,17 +301,26 @@
 			var modal = $(this);
 
 			$.ajax({
-				url : 'altaProducto',
-				method : 'GET',
-				success : function(data) {
-					if (data.codigo) {
-						modal.find('#codigo').val(data.codigo);
-					}
-				},
-				error : function() {
-					alert('Error al obtener el código del producto');
-				}
+			    url: 'altaProducto',
+			    method: 'GET',
+			    success: function(data) {
+			    	
+			    	if(modal.find('#codigo').val() == "") {
+			        	if (data.codigo) {
+			            	var texto = data.codigo.match(/[a-zA-Z]+/)[0]; 
+			            	var numero = parseInt(data.codigo.match(/\d+/)[0], 10); 
+			            	var nuevoNumero = numero + 1;
+			            	var nuevoCodigo = texto + nuevoNumero.toString().padStart(3, '0');
+
+			            	modal.find('#codigo').val(nuevoCodigo);
+			        	}
+			        }
+			    },
+			    error: function() {
+			        alert('Error al obtener el código del producto');
+			    }
 			});
+
 		});
 
 		/* FUNCIONES */
@@ -340,7 +349,7 @@
 		function llenarFormularioProducto(data) {
 
 			const producto = data.data;
-
+			
 			$('#productoId').val(producto.idProducto);
 			$('#codigo').val(producto.codigo);
 			$('#nombre').val(producto.nombre);

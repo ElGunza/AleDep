@@ -6,6 +6,7 @@ import aledep.dto.ProductoDTO;
 import aledep.model.Producto;
 
 import java.util.List;
+//import java.util.stream.Collectors;
 
 public class ProductoService {
 	private final ProductoDAO productoDAO;
@@ -15,15 +16,6 @@ public class ProductoService {
 	}
 
 	public void saveProducto(Producto producto) {
-		
-	System.out.println("SAVE PRODUCTO");
-		
-		if (producto.getCodigo() == null || producto.getCodigo().isEmpty()) {
-			int idProducto = obtenerSiguienteIdProducto(); 
-			String codigoGenerado = generarCodigoProducto(idProducto);
-			producto.setCodigo(codigoGenerado);
-		}
-
 		validarProducto(producto);
 		productoDAO.saveProducto(producto);
 	}
@@ -62,7 +54,7 @@ public class ProductoService {
 	}
 
 	public String generarCodigoProducto(int idProducto) {
-		return String.format("P%03d", idProducto); 
+		return String.format("P%03d", idProducto);
 	}
 
 	public int obtenerSiguienteIdProducto() {
@@ -127,4 +119,5 @@ public class ProductoService {
 		dto.setActivo(producto.getActivo());
 		return dto;
 	}
+
 }

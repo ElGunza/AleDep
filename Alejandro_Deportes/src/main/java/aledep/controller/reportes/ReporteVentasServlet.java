@@ -1,4 +1,4 @@
-package aledep.controller.venta;
+package aledep.controller.reportes;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
