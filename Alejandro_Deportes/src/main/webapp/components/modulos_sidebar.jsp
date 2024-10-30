@@ -144,14 +144,14 @@
 					de Productos</a>
 			</form>
 
-			<a class="collapse-item" href="reporte_estado_inventario.jsp">Estado
+<!-- 			<a class="collapse-item" href="reporte_estado_inventario.jsp">Estado
 				de Inventario</a>
 				
 			 <a class="collapse-item"
 				href="reporte_cambios_devoluciones.jsp">Cambios y Devoluciones</a>
 				
 			 <a class="collapse-item" href="reporte_estado_ocupacion_depositos.jsp">Estado
-				de Depósitos</a>
+				de Depósitos</a> -->
 		</div>
 	</div></li>
 

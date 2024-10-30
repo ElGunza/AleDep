@@ -1,10 +1,10 @@
 package aledep.controller.rol;
 
 import com.google.gson.Gson;
-
-import aledep.dto.RolDTO;
 import aledep.model.Rol;
+import aledep.model.Permiso;
 import aledep.service.RolService;
+import aledep.service.PermisoService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,65 +13,77 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @WebServlet("/editarRol")
 public class EditarRolServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
-	private final RolService rolService = new RolService();
+    private static final long serialVersionUID = 1L;
+    private final RolService rolService = new RolService();
+    private final PermisoService permisoService = new PermisoService();
 
-	
-	 @Override
-	    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-	            throws ServletException, IOException {
-	        try {
-	            int rolId = Integer.parseInt(request.getParameter("id"));
-	            Rol rol = rolService.getRolById(rolId);
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            int rolId = Integer.parseInt(request.getParameter("id"));
+            Rol rol = rolService.getRolById(rolId);
 
-	            if (rol != null) {
-	                RolDTO rolDTO = rolService.convertirArolDTO(rol);
-	                response.setContentType("application/json");
-	                response.getWriter().write(new Gson().toJson(rolDTO));
-	            } else {
-	                response.sendError(HttpServletResponse.SC_NOT_FOUND, "rol no encontrada");
-	            }
-	        } catch (Exception e) {
-	            manejarExcepcion(response, e, "Error al obtener la rol.");
-	        }
-	    }
-	
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		try {
-			Rol rol = obtenerRolDesdeRequest(request);
-			rolService.updateRol(rol);
+            if (rol != null) {
+                response.setContentType("application/json");
+                response.getWriter().write(new Gson().toJson(rol));
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Rol no encontrado");
+            }
+        } catch (Exception e) {
+            manejarExcepcion(response, e, "Error al obtener el rol.");
+        }
+    }
 
-			Map<String, String> responseData = new HashMap<>();
-			responseData.put("status", "success");
-			responseData.put("message", "Rol actualizado con éxito");
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            Rol rol = obtenerRolDesdeRequest(request);
+            rolService.updateRol(rol);
 
-			response.setContentType("application/json");
-			response.getWriter().write(new Gson().toJson(responseData));
-		} catch (Exception e) {
-			manejarExcepcion(response, e, "Error al actualizar el rol.");
-		}
-	}
+            Map<String, String> responseData = new HashMap<>();
+            responseData.put("status", "success");
+            responseData.put("message", "Rol actualizado con éxito");
 
-	private Rol obtenerRolDesdeRequest(HttpServletRequest request) {
-		String idRolStr = request.getParameter("rolId");
-		Integer idRol = (idRolStr != null && !idRolStr.isEmpty()) ? Integer.parseInt(idRolStr) : null;
+            response.setContentType("application/json");
+            response.getWriter().write(new Gson().toJson(responseData));
+        } catch (Exception e) {
+            manejarExcepcion(response, e, "Error al actualizar el rol.");
+        }
+    }
 
-		Rol rol = (idRol != null) ? rolService.getRolById(idRol) : new Rol();
-		rol.setNombre(request.getParameter("nombre"));
-		rol.setDescripcion(request.getParameter("descripcion"));
+    private Rol obtenerRolDesdeRequest(HttpServletRequest request) {
+        String idRolStr = request.getParameter("rolId");
+        Integer idRol = (idRolStr != null && !idRolStr.isEmpty()) ? Integer.parseInt(idRolStr) : null;
 
-		return rol;
-	}
+        Rol rol = (idRol != null) ? rolService.getRolById(idRol) : new Rol();
+        rol.setNombre(request.getParameter("nombre"));
+        rol.setDescripcion(request.getParameter("descripcion"));
 
-	private void manejarExcepcion(HttpServletResponse response, Exception e, String mensaje) throws IOException {
-		e.printStackTrace();
-		response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, mensaje);
-	}
+        // Obtener los permisos seleccionados
+        String[] permisosSeleccionados = request.getParameterValues("permisos");
+        Set<Permiso> permisos = new HashSet<>();
+        if (permisosSeleccionados != null) {
+            for (String permisoId : permisosSeleccionados) {
+                Permiso permiso = permisoService.getPermisoById(Integer.parseInt(permisoId));
+                permisos.add(permiso);
+            }
+        }
+        rol.setPermisos(permisos);
+
+        return rol;
+    }
+
+    private void manejarExcepcion(HttpServletResponse response, Exception e, String mensaje) throws IOException {
+        e.printStackTrace();
+        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, mensaje);
+    }
 }

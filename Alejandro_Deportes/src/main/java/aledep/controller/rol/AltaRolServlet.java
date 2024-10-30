@@ -43,10 +43,7 @@ public class AltaRolServlet extends HttpServlet {
     }
 
     private Rol obtenerRolDesdeRequest(HttpServletRequest request) {
-        String idRolStr = request.getParameter("rolId");
-        Integer idRol = (idRolStr != null && !idRolStr.isEmpty()) ? Integer.parseInt(idRolStr) : null;
-
-        Rol rol = (idRol != null) ? rolService.getRolById(idRol) : new Rol();
+        Rol rol = new Rol();
         rol.setNombre(request.getParameter("nombre"));
         rol.setDescripcion(request.getParameter("descripcion"));
 

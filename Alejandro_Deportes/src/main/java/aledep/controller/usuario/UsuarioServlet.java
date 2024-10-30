@@ -1,6 +1,7 @@
 package aledep.controller.usuario;
 
 import aledep.model.Usuario;
+import aledep.service.RolService;
 import aledep.service.UsuarioService;
 
 import javax.servlet.RequestDispatcher;
@@ -19,6 +20,7 @@ public class UsuarioServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 	private final UsuarioService usuarioService = new UsuarioService();
+	private final RolService rolService = new RolService();
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -37,6 +39,8 @@ public class UsuarioServlet extends HttpServlet {
 
 //			request.setAttribute("listaUsuarios", usuarios);
 
+			cargarListasEnSesion(request.getSession());
+
 			guardarUsuariosEnSesion(request.getSession(), usuarios);
 
 			RequestDispatcher dispatcher = request.getRequestDispatcher("usuarios_out.jsp");
@@ -50,5 +54,10 @@ public class UsuarioServlet extends HttpServlet {
 
 	private void guardarUsuariosEnSesion(HttpSession session, List<Usuario> usuarios) {
 		session.setAttribute("listaUsuarios", usuarios);
+
+	}
+
+	private void cargarListasEnSesion(HttpSession session) {
+		session.setAttribute("listaRoles", rolService.getActivosRoles());
 	}
 }
